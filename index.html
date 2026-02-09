@@ -3,58 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Ocorrências v6 - Mobile Ready</title>
+    <title>EEMTI Dragão do Mar - Ocorrências</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
-        /* Ajustes de layout responsivo */
-        body { 
-            font-family: 'Segoe UI', Tahoma, sans-serif; 
-            background-color: #f0f2f5; 
-            margin: 0; 
-            padding: 10px; 
-            display: flex; 
-            justify-content: center; 
-        }
-        .container { 
-            background: white; 
-            padding: 20px; 
-            border-radius: 12px; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
-            width: 100%; 
-            max-width: 500px; 
-            text-align: center; 
-            box-sizing: border-box;
-        }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f0f2f5; margin: 0; padding: 10px; display: flex; justify-content: center; }
+        .container { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 500px; text-align: center; box-sizing: border-box; }
         .logo-escola { max-width: 120px; height: auto; margin-bottom: 15px; }
         h2, h3 { color: #1a73e8; margin-bottom: 15px; font-size: 1.4rem; }
-        
-        /* Melhorando campos para telas de toque */
         label { font-weight: bold; display: block; margin-top: 12px; color: #444; text-align: left; font-size: 0.95rem; }
-        select, input, textarea { 
-            width: 100%; 
-            padding: 14px; /* Aumentado para facilitar o toque */
-            margin-top: 5px; 
-            border: 1px solid #ccd1d9; 
-            border-radius: 8px; 
-            box-sizing: border-box; 
-            font-size: 16px; /* Evita que o iPhone dê zoom automático ao focar */
-        }
+        select, input, textarea { width: 100%; padding: 14px; margin-top: 5px; border: 1px solid #ccd1d9; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
         
-        button { 
-            width: 100%; 
-            padding: 16px; 
-            margin-top: 20px; 
-            border: none; 
-            border-radius: 8px; 
-            cursor: pointer; 
-            font-size: 16px; 
-            font-weight: bold; 
-            transition: 0.3s; 
-        }
+        /* Estilo para as opções de Checkbox */
+        .checkbox-group { text-align: left; background: #f9f9f9; padding: 10px; border-radius: 8px; border: 1px solid #ddd; margin-top: 5px; }
+        .checkbox-item { display: flex; align-items: center; margin-bottom: 8px; cursor: pointer; font-size: 0.9rem; }
+        .checkbox-item input { width: auto; margin-right: 10px; margin-top: 0; transform: scale(1.2); }
+
+        button { width: 100%; padding: 16px; margin-top: 20px; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; transition: 0.3s; }
         .btn-blue { background-color: #1a73e8; color: white; }
         .btn-green { background-color: #25d366; color: white; }
-        button:active { transform: scale(0.98); } /* Efeito de clique no celular */
-
+        button:active { transform: scale(0.98); }
         .info-aluno { background: #e7f3ff; padding: 12px; border-radius: 8px; margin-bottom: 10px; font-weight: bold; color: #1a73e8; font-size: 1rem; }
         .hidden { display: none; }
     </style>
@@ -89,11 +56,22 @@
         <h3>Registro de Indisciplina</h3>
         <div class="info-aluno">Aluno(a): <span id="nome-aluno-confirmado"></span></div>
 
-        <label>Descrição do Fato:</label>
-        <textarea id="descricao" rows="4" placeholder="Descreva o ocorrido..."></textarea>
+        <label>Tipo de Ocorrência (Marque as opções):</label>
+        <div class="checkbox-group" id="tipos-ocorrencia">
+            <label class="checkbox-item"><input type="checkbox" value="Não usa o uniforme escolar"> Não usa o uniforme escolar</label>
+            <label class="checkbox-item"><input type="checkbox" value="Tumultua a aula"> Tumultua a aula</label>
+            <label class="checkbox-item"><input type="checkbox" value="Comporta-se de forma agressiva"> Comporta-se de forma agressiva</label>
+            <label class="checkbox-item"><input type="checkbox" value="Chegou em sala atrasado(a)"> Chegou em sala atrasado(a)</label>
+            <label class="checkbox-item"><input type="checkbox" value="Não segue as orientações do professor"> Não segue as orientações do professor</label>
+            <label class="checkbox-item"><input type="checkbox" value="Depreda o patrimônio público"> Depreda o patrimônio público</label>
+            <label class="checkbox-item"><input type="checkbox" value="Usa o celular de forma indevida"> Usa o celular de forma indevida</label>
+            <label class="checkbox-item"><input type="checkbox" value="Desrespeita professores, colegas e/ou funcionários"> Desrespeita professores, colegas e/ou funcionários</label>
+            <label class="checkbox-item"><input type="checkbox" value="Saiu de sala sem autorização"> Saiu de sala sem autorização</label>
+            <label class="checkbox-item"><input type="checkbox" value="Saiu da escola sem autorização"> Saiu da escola sem autorização</label>
+        </div>
 
-        <label>Envolvidos:</label>
-        <input type="text" id="envolvidos" placeholder="Nomes ou 'Ninguém'">
+        <label>Observações Adicionais:</label>
+        <textarea id="descricao" rows="3" placeholder="Detalhes extras..."></textarea>
 
         <label>Houve Agressão?</label>
         <select id="houve-agressao">
@@ -103,10 +81,7 @@
         </select>
 
         <label>Penalidades/Sanções:</label>
-        <input type="text" id="penalidades" placeholder="Ex: Suspensão">
-
-        <label>Providências Tomadas:</label>
-        <textarea id="providencias" rows="2" placeholder="Ex: Conversa com os pais"></textarea>
+        <input type="text" id="penalidades" placeholder="Ex: Suspensão ou Advertência">
 
         <label>WhatsApp do Responsável:</label>
         <input type="number" id="whatsapp-fone" placeholder="Ex: 85999999999" inputmode="tel">
@@ -168,28 +143,35 @@
         document.getElementById('nome-aluno-confirmado').innerText = alunoSel;
         document.getElementById('tela-selecao').classList.add('hidden');
         document.getElementById('tela-formulario').classList.remove('hidden');
-        window.scrollTo(0,0); // Volta para o topo no celular
+        window.scrollTo(0,0);
     }
 
     function gerarEEnviar() {
         const aluno = document.getElementById('nome-aluno-confirmado').innerText;
         const turma = document.getElementById('turma').value;
-        const desc = document.getElementById('descricao').value;
-        const env = document.getElementById('envolvidos').value;
+        const obsAdicional = document.getElementById('descricao').value;
         const agr = document.getElementById('houve-agressao').value;
         const pen = document.getElementById('penalidades').value;
-        const prov = document.getElementById('providencias').value;
         const fone = document.getElementById('whatsapp-fone').value;
 
+        // Pegar todos os tipos marcados
+        const checkboxes = document.querySelectorAll('#tipos-ocorrencia input[type="checkbox"]:checked');
+        let tiposSelecionados = Array.from(checkboxes).map(cb => cb.value);
+        
+        if(tiposSelecionados.length === 0 && obsAdicional === "") {
+            return alert("Por favor, selecione ao menos um tipo de ocorrência ou escreva uma observação.");
+        }
         if(!fone) return alert("Preencha o WhatsApp!");
 
         const agora = new Date();
         const dataFormatada = agora.toLocaleDateString('pt-BR');
         const horaFormatada = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 
-        // 1. GERAR PDF (Ajustado para EEMTI Dragão do Mar)
+        const textoTipos = tiposSelecionados.join(', ');
+
+        // 1. GERAR PDF
         const doc = new jsPDF();
-        doc.setFontSize(14); // Reduzido um pouco para caber o nome da escola
+        doc.setFontSize(14);
         doc.text("EEMTI DRAGÃO DO MAR", 105, 15, { align: "center" });
         doc.setFontSize(11);
         doc.text("RELATÓRIO DE OCORRÊNCIA ESCOLAR", 105, 22, { align: "center" });
@@ -201,36 +183,37 @@
         doc.line(20, 52, 190, 52);
 
         doc.setFont("helvetica", "bold");
-        doc.text("DESCRIÇÃO:", 20, 60);
+        doc.text("TIPOS DE OCORRÊNCIA:", 20, 60);
         doc.setFont("helvetica", "normal");
-        doc.text(desc, 20, 65, { maxWidth: 170 });
+        doc.text(textoTipos || "Conforme observações abaixo", 20, 65, { maxWidth: 170 });
 
-        doc.text(`Houve Agressão? ${agr}`, 20, 95);
-        doc.text(`Sanções Aplicadas: ${pen}`, 20, 105);
-        doc.text(`Providências: ${prov}`, 20, 115, { maxWidth: 170 });
+        doc.setFont("helvetica", "bold");
+        doc.text("OBSERVAÇÕES ADICIONAIS:", 20, 85);
+        doc.setFont("helvetica", "normal");
+        doc.text(obsAdicional || "Nenhuma", 20, 90, { maxWidth: 170 });
+
+        doc.text(`Agressão? ${agr}`, 20, 115);
+        doc.text(`Sanções: ${pen}`, 20, 125);
         
-        doc.save(`Ocorrencia_${aluno.split(' ')[0]}_${dataFormatada.replace(/\//g,'-')}.pdf`);
+        doc.save(`Ocorrencia_${aluno.split(' ')[0]}.pdf`);
 
-        // 2. WHATSAPP COM EMOJIS E FORMATADO
+        // 2. WHATSAPP
         const saudacao = `*📎COMUNICADO ESCOLAR*%0A%0A📌Olá, somos da escola *EEMTI DRAGÃO DO MAR*. Informamos que um relatório de indisciplina foi gerado para o(a) aluno(a) *${aluno}* em *${dataFormatada}* às *${horaFormatada}*.%0A%0A`;
-        const detalhes = `*➡️RESUMO DA OCORRÊNCIA:*%0A%0A` +
+        const detalhes = `*➡️DETALHES:*%0A%0A` +
                          `*🎓Aluno(a):* ${aluno}%0A` +
-                         `*📆Data/Hora:* ${dataFormatada} - ${horaFormatada}%0A` +
-                         `*📝Descrição:* ${desc}%0A` +
-                         `*⚠️Houve Agressão?* ${agr}%0A` +
-                         `*🚦Sanções:* ${pen}%0A` +
-                         `*➡️Providências:* ${prov}%0A%0A` +
+                         `*📆Data:* ${dataFormatada} - ${horaFormatada}%0A` +
+                         `*⚠️Ocorrência(s):*%0A ${textoTipos || "Ver observações"}%0A` +
+                         `*📝Observações:* %0A ${obsAdicional || "Não informada"}%0A` +
+                         `*⚠️Houve algum tipo de agressão?* ${agr}%0A` +
+                         `*🚦Sanções:* ${pen}%0A%0A` +
                          `_💾O arquivo PDF detalhado foi gerado e salvo. Por favor, solicite-o caso necessário ou aguarde o envio manual por este canal._`;
 
         const url = `https://api.whatsapp.com/send?phone=55${fone}&text=${saudacao}${detalhes}`;
-        
         setTimeout(() => { window.open(url, '_blank'); }, 1000);
     }
 </script>
 </body>
 </html>
-
-
 
 
 
