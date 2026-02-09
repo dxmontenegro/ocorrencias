@@ -153,7 +153,7 @@
         // 1. GERAR PDF
         const doc = new jsPDF();
         doc.setFontSize(18);
-        doc.text("RELATÓRIO DE OCORRÊNCIA ESCOLAR", 105, 20, { align: "center" });
+        doc.text("EEMTI DRAGÃO DO MAR - RELATÓRIO DE OCORRÊNCIA ESCOLAR", 105, 20, { align: "center" });
         doc.setFontSize(12);
         doc.text(`Data: ${dataFormatada} às ${horaFormatada}`, 20, 35);
         doc.text(`Aluno: ${aluno}`, 20, 45);
@@ -166,14 +166,14 @@
         doc.save(`Ocorrencia_${aluno.replace(/ /g, "_")}.pdf`);
 
         // 2. WHATSAPP COM DATA E HORA
-        const saudacao = `*COMUNICADO ESCOLAR*%0A%0AOlá, somos da escola. Informamos que um relatório de ocorrência foi gerado para o(a) aluno(a) *${aluno}* em *${dataFormatada}* às *${horaFormatada}*.%0A%0A`;
+        const saudacao = `*COMUNICADO ESCOLAR*%0A%0A📌Olá, somos da escola EEMTI DRAGÃO DO MAR. Informamos que um relatório de ocorrência foi gerado para o(a) aluno(a) *${aluno}* em *${dataFormatada}* às *${horaFormatada}*.%0A%0A`;
         const detalhes = `*RESUMO DA OCORRÊNCIA:*%0A` +
                          `*Aluno:* ${aluno}%0A` +
                          `*Data/Hora:* ${dataFormatada} - ${horaFormatada}%0A` +
                          `*Descrição:* ${desc}%0A` +
                          `*Agressão:* ${agr}%0A` +
                          `*Sanções:* ${pen}%0A%0A` +
-                         `_O arquivo PDF detalhado foi baixado e deve ser enviado em anexo._`;
+                         `_Foi gerado um  arquivo PDF dessa ocorrência e salvo em nosso banco de dados ._`;
 
         const url = `https://api.whatsapp.com/send?phone=55${fone}&text=${saudacao}${detalhes}`;
         
@@ -181,4 +181,5 @@
     }
 </script>
 </body>
+
 </html>
