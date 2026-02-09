@@ -71,7 +71,7 @@
         <label>WhatsApp do Responsável (DDD + Número):</label>
         <input type="number" id="whatsapp-fone" placeholder="Ex: 11999999999">
 
-        <button class="btn-green" onclick="gerarEEnviar()">GERAR PDF E ENVIAR WHATSAPP</button>
+        <button class="btn-green" onclick="gerarEEnviar()">SALVAR E ENVIAR WHATSAPP</button>
     </div>
 </div>
 
@@ -166,14 +166,15 @@
         doc.save(`Ocorrencia_${aluno.replace(/ /g, "_")}.pdf`);
 
         // 2. WHATSAPP COM DATA E HORA
-        const saudacao = `*COMUNICADO ESCOLAR*%0A%0A📌Olá, somos da escola EEMTI DRAGÃO DO MAR. Informamos que um relatório de ocorrência foi gerado para o(a) aluno(a) *${aluno}* em *${dataFormatada}* às *${horaFormatada}*.%0A%0A`;
-        const detalhes = `*RESUMO DA OCORRÊNCIA:*%0A` +
-                         `*Aluno:* ${aluno}%0A` +
-                         `*Data/Hora:* ${dataFormatada} - ${horaFormatada}%0A` +
-                         `*Descrição:* ${desc}%0A` +
-                         `*Agressão:* ${agr}%0A` +
-                         `*Sanções:* ${pen}%0A%0A` +
-                         `_Foi gerado um  arquivo PDF dessa ocorrência e salvo em nosso banco de dados ._`;
+        const saudacao = `*📎COMUNICADO ESCOLAR*%0A%0A📌Olá, somos da escola EEMTI DRAGÃO DO MAR. Informamos que um relatório de ocorrência foi gerado para o(a) aluno(a) *${aluno}* em *${dataFormatada}* às *${horaFormatada}*.%0A%0A`;
+        const detalhes = `*➡️RESUMO DA OCORRÊNCIA:*%0A` +
+                         `*🎓Aluno(a):* ${aluno}%0A` +
+                         `*📆Data/Hora:* ${dataFormatada} - ${horaFormatada}%0A` +
+                         `*📝Descrição:* ${desc}%0A` +
+                         `*⚠️Agressão:* ${agr}%0A` +
+                         `*🚦Sanções:* ${pen}%0A%0A` +
+                         `*➡️Providências:* ${prov}%0A%0A` +
+                         `_💾Foi gerado um  arquivo PDF dessa ocorrência e salvo em nosso banco de dados ._`;
 
         const url = `https://api.whatsapp.com/send?phone=55${fone}&text=${saudacao}${detalhes}`;
         
@@ -183,3 +184,4 @@
 </body>
 
 </html>
+
