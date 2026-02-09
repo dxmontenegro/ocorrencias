@@ -167,12 +167,12 @@
 
         // 2. WHATSAPP COM DATA E HORA
         const saudacao = `*📎COMUNICADO ESCOLAR*%0A%0A📌Olá, somos da escola EEMTI DRAGÃO DO MAR. Informamos que um relatório de ocorrência foi gerado para o(a) aluno(a) *${aluno}* em *${dataFormatada}* às *${horaFormatada}*.%0A%0A`;
-        const detalhes = `*➡️RESUMO DA OCORRÊNCIA:*%0A` +
+        const detalhes = `*➡️RESUMO DA OCORRÊNCIA:*%0A%0A` +
                          `*🎓Aluno(a):* ${aluno}%0A` +
                          `*📆Data/Hora:* ${dataFormatada} - ${horaFormatada}%0A` +
                          `*📝Descrição:* ${desc}%0A` +
                          `*⚠️Agressão:* ${agr}%0A` +
-                         `*🚦Sanções:* ${pen}%0A%0A` +
+                         `*🚦Sanções:* ${pen}%0A` +
                          `*➡️Providências:* ${prov}%0A%0A` +
                          `_💾Foi gerado um  arquivo PDF dessa ocorrência e salvo em nosso banco de dados ._`;
 
@@ -184,4 +184,5 @@
 </body>
 
 </html>
+
 
