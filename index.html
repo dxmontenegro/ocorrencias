@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Sistema de Ocorrências v5</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; padding: 20px; display: flex; justify-content: center; }
+        .container { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 500px; text-align: center; }
+        .hidden { display: none; }
+        .logo-escola { max-width: 150px; margin-bottom: 20px; }
+        h2 { color: #1a73e8; margin-bottom: 20px; }
+        label { font-weight: bold; display: block; margin-top: 15px; color: #444; text-align: left; }
+        select, input, textarea { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #ccd1d9; border-radius: 6px; box-sizing: border-box; }
+        button { width: 100%; padding: 15px; margin-top: 20px; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; transition: 0.3s; }
+        .btn-blue { background-color: #1a73e8; color: white; }
+        .btn-green { background-color: #25d366; color: white; }
+        button:hover { opacity: 0.8; }
+        .info-aluno { background: #e7f3ff; padding: 10px; border-radius: 6px; margin-bottom: 10px; font-weight: bold; color: #1a73e8; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <img src="logo1.png" alt="Logo da Escola" class="logo-escola" onerror="this.style.display='none';">
+
+    <div id="tela-login">
+        <h2>Acesso Docente</h2>
+        <input type="password" id="senha" placeholder="Senha de acesso">
+        <button class="btn-blue" onclick="fazerLogin()">Entrar</button>
+    </div>
+
+    <div id="tela-selecao" class="hidden">
+        <h2>Nova Ocorrência</h2>
+        <label>Modalidade:</label>
+        <select id="modalidade" onchange="atualizarTurmas()">
+            <option value="">Selecione...</option>
+            <option value="integral">Integral</option>
+            <option value="noturno">Noturno</option>
+        </select>
+        <label>Turma:</label>
+        <select id="turma" onchange="atualizarAlunos()"><option value="">Selecione a modalidade...</option></select>
+        <label>Aluno:</label>
+        <select id="aluno"><option value="">Selecione a turma...</option></select>
+        <button class="btn-blue" onclick="abrirFormulario()">CRIAR OCORRÊNCIA</button>
+    </div>
+
+    <div id="tela-formulario" class="hidden">
+        <h3>Detalhes do Registro</h3>
+        <div class="info-aluno">Aluno(a): <span id="nome-aluno-confirmado"></span></div>
+
+        <label>Descrição do Fato:</label>
+        <textarea id="descricao" rows="3"></textarea>
+
+        <label>Outros Envolvidos:</label>
+        <input type="text" id="envolvidos" placeholder="Nomes ou 'Ninguém'">
+
+        <label>Houve Agressão?</label>
+        <select id="houve-agressao">
+            <option value="Não">Não</option>
+            <option value="Sim (Física)">Sim (Física)</option>
+            <option value="Sim (Verbal)">Sim (Verbal)</option>
+        </select>
+
+        <label>Penalidades/Sanções:</label>
+        <input type="text" id="penalidades">
+
+        <label>Providências Tomadas:</label>
+        <textarea id="providencias" rows="2"></textarea>
+
+        <label>WhatsApp do Responsável (DDD + Número):</label>
+        <input type="number" id="whatsapp-fone" placeholder="Ex: 11999999999">
+
+        <button class="btn-green" onclick="gerarEEnviar()">GERAR PDF E ENVIAR WHATSAPP</button>
+    </div>
+</div>
+
+<script>
+    const { jsPDF } = window.jspdf;
+
+    const dadosEscola = {
+        integral: {
+            "1ª Série A": ["Ana Silva", "Bruno Souza"],
+            "1ª Série B": ["Carlos Edu", "Daniela Lima"],
+            "1ª Série C": ["Erick M.", "Fernanda O."],
+            "2ª Série A": ["Gabriel H.", "Helena R."],
+            "2ª Série B": ["Igor X.", "Julia P."],
+            "2ª Série C": ["Kevin S.", "Lana T."],
+            "3ª Série A": ["Mario J.", "Nina V."],
+            "3ª Série B": ["Otávio B.", "Paula C."]
+        },
+        noturno: {
+            "1ª Série D": ["Ricardo F.", "Sonia G."],
+            "2ª Série D": ["Tiago L.", "Ursula K."],
+            "3ª Série C": ["Vitor Y.", "Zeca J."]
+        }
+    };
+
+    function fazerLogin() {
+        if(document.getElementById('senha').value === "123") {
+            document.getElementById('tela-login').classList.add('hidden');
+            document.getElementById('tela-selecao').classList.remove('hidden');
+        } else { alert("Senha incorreta!"); }
+    }
+
+    function atualizarTurmas() {
+        const mod = document.getElementById('modalidade').value;
+        const sel = document.getElementById('turma');
+        sel.innerHTML = '<option value="">Selecione a turma...</option>';
+        if(mod && dadosEscola[mod]) {
+            Object.keys(dadosEscola[mod]).forEach(t => sel.innerHTML += `<option value="${t}">${t}</option>`);
+        }
+    }
+
+    function atualizarAlunos() {
+        const mod = document.getElementById('modalidade').value;
+        const tur = document.getElementById('turma').value;
+        const sel = document.getElementById('aluno');
+        sel.innerHTML = '<option value="">Selecione o aluno...</option>';
+        if(mod && tur && dadosEscola[mod][tur]) {
+            dadosEscola[mod][tur].forEach(a => sel.innerHTML += `<option value="${a}">${a}</option>`);
+        }
+    }
+
+    function abrirFormulario() {
+        const alunoSel = document.getElementById('aluno').value;
+        if(!alunoSel) {
+            alert("Por favor, selecione um aluno!");
+            return;
+        }
+        document.getElementById('nome-aluno-confirmado').innerText = alunoSel;
+        document.getElementById('tela-selecao').classList.add('hidden');
+        document.getElementById('tela-formulario').classList.remove('hidden');
+    }
+
+    function gerarEEnviar() {
+        const aluno = document.getElementById('nome-aluno-confirmado').innerText;
+        const turma = document.getElementById('turma').value;
+        const desc = document.getElementById('descricao').value;
+        const env = document.getElementById('envolvidos').value;
+        const agr = document.getElementById('houve-agressao').value;
+        const pen = document.getElementById('penalidades').value;
+        const prov = document.getElementById('providencias').value;
+        const fone = document.getElementById('whatsapp-fone').value;
+
+        if(!fone) return alert("Preencha o WhatsApp!");
+
+        // Captura Data e Hora atuais
+        const agora = new Date();
+        const dataFormatada = agora.toLocaleDateString('pt-BR');
+        const horaFormatada = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
+        // 1. GERAR PDF
+        const doc = new jsPDF();
+        doc.setFontSize(18);
+        doc.text("RELATÓRIO DE OCORRÊNCIA ESCOLAR", 105, 20, { align: "center" });
+        doc.setFontSize(12);
+        doc.text(`Data: ${dataFormatada} às ${horaFormatada}`, 20, 35);
+        doc.text(`Aluno: ${aluno}`, 20, 45);
+        doc.text(`Turma: ${turma}`, 20, 55);
+        doc.line(20, 60, 190, 60);
+        doc.text(`Descrição: ${desc}`, 20, 70, { maxWidth: 170 });
+        doc.text(`Agressão: ${agr}`, 20, 100);
+        doc.text(`Sanções: ${pen}`, 20, 110);
+        doc.text(`Providências: ${prov}`, 20, 120, { maxWidth: 170 });
+        doc.save(`Ocorrencia_${aluno.replace(/ /g, "_")}.pdf`);
+
+        // 2. WHATSAPP COM DATA E HORA
+        const saudacao = `*COMUNICADO ESCOLAR*%0A%0AOlá, somos da escola. Informamos que um relatório de ocorrência foi gerado para o(a) aluno(a) *${aluno}* em *${dataFormatada}* às *${horaFormatada}*.%0A%0A`;
+        const detalhes = `*RESUMO DA OCORRÊNCIA:*%0A` +
+                         `*Aluno:* ${aluno}%0A` +
+                         `*Data/Hora:* ${dataFormatada} - ${horaFormatada}%0A` +
+                         `*Descrição:* ${desc}%0A` +
+                         `*Agressão:* ${agr}%0A` +
+                         `*Sanções:* ${pen}%0A%0A` +
+                         `_O arquivo PDF detalhado foi baixado e deve ser enviado em anexo._`;
+
+        const url = `https://api.whatsapp.com/send?phone=55${fone}&text=${saudacao}${detalhes}`;
+        
+        setTimeout(() => { window.open(url, '_blank'); }, 800);
+    }
+</script>
+</body>
+</html>
