@@ -2,21 +2,61 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Sistema de Ocorrências v5</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Ocorrências v6 - Mobile Ready</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; padding: 20px; display: flex; justify-content: center; }
-        .container { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 500px; text-align: center; }
-        .hidden { display: none; }
-        .logo-escola { max-width: 150px; margin-bottom: 20px; }
-        h2 { color: #1a73e8; margin-bottom: 20px; }
-        label { font-weight: bold; display: block; margin-top: 15px; color: #444; text-align: left; }
-        select, input, textarea { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #ccd1d9; border-radius: 6px; box-sizing: border-box; }
-        button { width: 100%; padding: 15px; margin-top: 20px; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; transition: 0.3s; }
+        /* Ajustes de layout responsivo */
+        body { 
+            font-family: 'Segoe UI', Tahoma, sans-serif; 
+            background-color: #f0f2f5; 
+            margin: 0; 
+            padding: 10px; 
+            display: flex; 
+            justify-content: center; 
+        }
+        .container { 
+            background: white; 
+            padding: 20px; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
+            width: 100%; 
+            max-width: 500px; 
+            text-align: center; 
+            box-sizing: border-box;
+        }
+        .logo-escola { max-width: 120px; height: auto; margin-bottom: 15px; }
+        h2, h3 { color: #1a73e8; margin-bottom: 15px; font-size: 1.4rem; }
+        
+        /* Melhorando campos para telas de toque */
+        label { font-weight: bold; display: block; margin-top: 12px; color: #444; text-align: left; font-size: 0.95rem; }
+        select, input, textarea { 
+            width: 100%; 
+            padding: 14px; /* Aumentado para facilitar o toque */
+            margin-top: 5px; 
+            border: 1px solid #ccd1d9; 
+            border-radius: 8px; 
+            box-sizing: border-box; 
+            font-size: 16px; /* Evita que o iPhone dê zoom automático ao focar */
+        }
+        
+        button { 
+            width: 100%; 
+            padding: 16px; 
+            margin-top: 20px; 
+            border: none; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-size: 16px; 
+            font-weight: bold; 
+            transition: 0.3s; 
+        }
         .btn-blue { background-color: #1a73e8; color: white; }
         .btn-green { background-color: #25d366; color: white; }
-        button:hover { opacity: 0.8; }
-        .info-aluno { background: #e7f3ff; padding: 10px; border-radius: 6px; margin-bottom: 10px; font-weight: bold; color: #1a73e8; }
+        button:active { transform: scale(0.98); } /* Efeito de clique no celular */
+
+        .info-aluno { background: #e7f3ff; padding: 12px; border-radius: 8px; margin-bottom: 10px; font-weight: bold; color: #1a73e8; font-size: 1rem; }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
@@ -26,8 +66,8 @@
 
     <div id="tela-login">
         <h2>Acesso Docente</h2>
-        <input type="password" id="senha" placeholder="Senha de acesso">
-        <button class="btn-blue" onclick="fazerLogin()">Entrar</button>
+        <input type="password" id="senha" placeholder="Senha de acesso" inputmode="numeric">
+        <button class="btn-blue" onclick="fazerLogin()">ENTRAR</button>
     </div>
 
     <div id="tela-selecao" class="hidden">
@@ -39,20 +79,20 @@
             <option value="noturno">Noturno</option>
         </select>
         <label>Turma:</label>
-        <select id="turma" onchange="atualizarAlunos()"><option value="">Selecione a modalidade...</option></select>
+        <select id="turma" onchange="atualizarAlunos()"><option value="">Aguardando modalidade...</option></select>
         <label>Aluno:</label>
-        <select id="aluno"><option value="">Selecione a turma...</option></select>
+        <select id="aluno"><option value="">Aguardando turma...</option></select>
         <button class="btn-blue" onclick="abrirFormulario()">CRIAR OCORRÊNCIA</button>
     </div>
 
     <div id="tela-formulario" class="hidden">
-        <h3>Detalhes do Registro</h3>
+        <h3>Registro de Indisciplina</h3>
         <div class="info-aluno">Aluno(a): <span id="nome-aluno-confirmado"></span></div>
 
         <label>Descrição do Fato:</label>
-        <textarea id="descricao" rows="3"></textarea>
+        <textarea id="descricao" rows="4" placeholder="Descreva o ocorrido..."></textarea>
 
-        <label>Outros Envolvidos:</label>
+        <label>Envolvidos:</label>
         <input type="text" id="envolvidos" placeholder="Nomes ou 'Ninguém'">
 
         <label>Houve Agressão?</label>
@@ -63,15 +103,15 @@
         </select>
 
         <label>Penalidades/Sanções:</label>
-        <input type="text" id="penalidades">
+        <input type="text" id="penalidades" placeholder="Ex: Suspensão">
 
         <label>Providências Tomadas:</label>
-        <textarea id="providencias" rows="2"></textarea>
+        <textarea id="providencias" rows="2" placeholder="Ex: Conversa com os pais"></textarea>
 
-        <label>WhatsApp do Responsável (DDD + Número):</label>
-        <input type="number" id="whatsapp-fone" placeholder="Ex: 11999999999">
+        <label>WhatsApp do Responsável:</label>
+        <input type="number" id="whatsapp-fone" placeholder="Ex: 85999999999" inputmode="tel">
 
-        <button class="btn-green" onclick="gerarEEnviar()">SALVAR E ENVIAR WHATSAPP</button>
+        <button class="btn-green" onclick="gerarEEnviar()">SALVAR E NOTIFICAR</button>
     </div>
 </div>
 
@@ -124,13 +164,11 @@
 
     function abrirFormulario() {
         const alunoSel = document.getElementById('aluno').value;
-        if(!alunoSel) {
-            alert("Por favor, selecione um aluno!");
-            return;
-        }
+        if(!alunoSel) return alert("Selecione um aluno!");
         document.getElementById('nome-aluno-confirmado').innerText = alunoSel;
         document.getElementById('tela-selecao').classList.add('hidden');
         document.getElementById('tela-formulario').classList.remove('hidden');
+        window.scrollTo(0,0); // Volta para o topo no celular
     }
 
     function gerarEEnviar() {
@@ -145,45 +183,51 @@
 
         if(!fone) return alert("Preencha o WhatsApp!");
 
-        // Captura Data e Hora atuais
         const agora = new Date();
         const dataFormatada = agora.toLocaleDateString('pt-BR');
         const horaFormatada = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 
-        // 1. GERAR PDF
+        // 1. GERAR PDF (Ajustado para EEMTI Dragão do Mar)
         const doc = new jsPDF();
-        doc.setFontSize(18);
-        doc.text("EEMTI DRAGÃO DO MAR - RELATÓRIO DE OCORRÊNCIA ESCOLAR", 105, 20, { align: "center" });
-        doc.setFontSize(12);
+        doc.setFontSize(14); // Reduzido um pouco para caber o nome da escola
+        doc.text("EEMTI DRAGÃO DO MAR", 105, 15, { align: "center" });
+        doc.setFontSize(11);
+        doc.text("RELATÓRIO DE OCORRÊNCIA ESCOLAR", 105, 22, { align: "center" });
+        
+        doc.setFontSize(10);
         doc.text(`Data: ${dataFormatada} às ${horaFormatada}`, 20, 35);
-        doc.text(`Aluno: ${aluno}`, 20, 45);
-        doc.text(`Turma: ${turma}`, 20, 55);
-        doc.line(20, 60, 190, 60);
-        doc.text(`Descrição: ${desc}`, 20, 70, { maxWidth: 170 });
-        doc.text(`Agressão: ${agr}`, 20, 100);
-        doc.text(`Sanções: ${pen}`, 20, 110);
-        doc.text(`Providências: ${prov}`, 20, 120, { maxWidth: 170 });
-        doc.save(`Ocorrencia_${aluno.replace(/ /g, "_")}.pdf`);
+        doc.text(`Aluno(a): ${aluno}`, 20, 42);
+        doc.text(`Turma: ${turma}`, 20, 49);
+        doc.line(20, 52, 190, 52);
 
-        // 2. WHATSAPP COM DATA E HORA
-        const saudacao = `*📎COMUNICADO ESCOLAR*%0A%0A📌Olá, somos da escola EEMTI DRAGÃO DO MAR. Informamos que um relatório de ocorrência foi gerado para o(a) aluno(a) *${aluno}* em *${dataFormatada}* às *${horaFormatada}*.%0A%0A`;
+        doc.setFont("helvetica", "bold");
+        doc.text("DESCRIÇÃO:", 20, 60);
+        doc.setFont("helvetica", "normal");
+        doc.text(desc, 20, 65, { maxWidth: 170 });
+
+        doc.text(`Houve Agressão? ${agr}`, 20, 95);
+        doc.text(`Sanções Aplicadas: ${pen}`, 20, 105);
+        doc.text(`Providências: ${prov}`, 20, 115, { maxWidth: 170 });
+        
+        doc.save(`Ocorrencia_${aluno.split(' ')[0]}_${dataFormatada.replace(/\//g,'-')}.pdf`);
+
+        // 2. WHATSAPP COM EMOJIS E FORMATADO
+        const saudacao = `*📎COMUNICADO ESCOLAR*%0A%0A📌Olá, somos da escola *EEMTI DRAGÃO DO MAR*. Informamos que um relatório de indisciplina foi gerado para o(a) aluno(a) *${aluno}* em *${dataFormatada}* às *${horaFormatada}*.%0A%0A`;
         const detalhes = `*➡️RESUMO DA OCORRÊNCIA:*%0A%0A` +
                          `*🎓Aluno(a):* ${aluno}%0A` +
                          `*📆Data/Hora:* ${dataFormatada} - ${horaFormatada}%0A` +
                          `*📝Descrição:* ${desc}%0A` +
-                         `*⚠️Houve Agressão ?* ${agr}%0A` +
+                         `*⚠️Houve Agressão?* ${agr}%0A` +
                          `*🚦Sanções:* ${pen}%0A` +
                          `*➡️Providências:* ${prov}%0A%0A` +
-                         `_💾Foi gerado um  arquivo PDF dessa ocorrência e salvo em nosso banco de dados ._`;
+                         `_💾O arquivo PDF detalhado foi gerado e salvo. Por favor, solicite-o caso necessário ou aguarde o envio manual por este canal._`;
 
         const url = `https://api.whatsapp.com/send?phone=55${fone}&text=${saudacao}${detalhes}`;
         
-        setTimeout(() => { window.open(url, '_blank'); }, 800);
+        setTimeout(() => { window.open(url, '_blank'); }, 1000);
     }
 </script>
 </body>
-
 </html>
-
 
 
