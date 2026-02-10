@@ -1,4 +1,4 @@
-<<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
@@ -192,9 +192,10 @@
         doc.text(`Houve Algum Tipo de Agressão ? ${agr}`, 20, 115);
         doc.text(`Sanções: ${pen}`, 20, 125);
         
-        doc.save(`Ocorrencia_${aluno.split(' ')[0]}.pdf`);
+        // NOMEAÇÃO DO ARQUIVO: Turma - Nome Completo
+        doc.save(`${turma} - ${aluno}.pdf`);
 
-        const saudacao = `*📎COMUNICADO ESCOLAR*%0A%0A📌Olá, somos da escola *EEMTI DRAGÃO DO MAR*. Informamos que um relatório de indisciplina foi gerado para o(a) aluno(a) *${aluno}* em *${dataFormatada}* às *${horaFormatada}*.%0A%0A`;
+        const saudacao = `*📎GOVERNO DO ESTADO DO CEARÁ*%0A%0A📌Olá, somos da escola *EEMTI DRAGÃO DO MAR*. Informamos que um relatório de indisciplina foi gerado para o(a) aluno(a) *${aluno}* em *${dataFormatada}* às *${horaFormatada}*.%0A%0A`;
         const detalhes = `*➡️DETALHES:*%0A%0A` +
                          `*🎓Aluno(a):* ${aluno}%0A` +
                          `*📆Data:* ${dataFormatada} - ${horaFormatada}%0A` +
@@ -210,8 +211,6 @@
 </script>
 </body>
 </html>
-
-
 
 
 
