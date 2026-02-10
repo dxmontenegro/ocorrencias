@@ -20,7 +20,6 @@
         input, select, textarea { width: 100%; padding: 14px; margin-top: 5px; border: 1.5px solid #ccd1d9; border-radius: 8px; box-sizing: border-box; font-size: 16px; transition: 0.3s; }
         input:focus { border-color: #1a73e8; outline: none; box-shadow: 0 0 0 3px rgba(26,115,232,0.1); }
         
-        /* Botões */
         button { width: 100%; padding: 16px; margin-top: 20px; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; transition: 0.3s; }
         .btn-blue { background-color: #1a73e8; color: white; }
         .btn-blue:hover { background-color: #1557b0; }
@@ -28,7 +27,6 @@
         .btn-green:hover { background-color: #128c7e; }
         button:active { transform: scale(0.98); }
 
-        /* Footer de Autenticação */
         .auth-footer { margin-top: 20px; display: flex; justify-content: space-between; font-size: 0.85rem; border-top: 1px solid #eee; padding-top: 15px; }
         .auth-footer a { color: #1a73e8; text-decoration: none; font-weight: 600; cursor: pointer; }
         .auth-footer a:hover { text-decoration: underline; }
@@ -49,15 +47,11 @@
     <div id="tela-login">
         <h2>EEMTI DRAGÃO DO MAR</h2>
         <p class="subtitle">Sistema de Ocorrências</p>
-        
         <label>E-mail</label>
         <input type="email" id="login-email" placeholder="seu@email.com">
-        
         <label>Senha</label>
         <input type="password" id="login-senha" placeholder="Digite sua senha">
-        
         <button class="btn-blue" onclick="acaoLogin()">ENTRAR</button>
-        
         <div class="auth-footer">
             <a onclick="solicitarReset()">Esqueceu a senha?</a>
             <a onclick="mostrarTela('tela-cadastro')">Criar conta</a>
@@ -67,15 +61,11 @@
     <div id="tela-cadastro" class="hidden">
         <h2>Novo Cadastro</h2>
         <p class="subtitle">Crie seu acesso de professor</p>
-        
         <label>E-mail Institucional</label>
         <input type="email" id="cad-email" placeholder="professor@escola.com">
-        
         <label>Defina uma Senha</label>
         <input type="password" id="cad-senha" placeholder="Mínimo 6 caracteres">
-        
         <button class="btn-blue" onclick="acaoCadastro()">CADASTRAR</button>
-        
         <div class="auth-footer">
             <a onclick="mostrarTela('tela-login')" style="width: 100%; text-align: center;">Já tem uma conta? Faça login</a>
         </div>
@@ -99,7 +89,6 @@
     <div id="tela-formulario" class="hidden">
         <h3>Registro de Indisciplina</h3>
         <div class="info-aluno">Aluno(a): <span id="nome-aluno-confirmado"></span></div>
-
         <label>Tipo de Ocorrência:</label>
         <div class="checkbox-group" id="tipos-ocorrencia">
             <label class="checkbox-item"><input type="checkbox" value="Não usa o uniforme escolar"> Não usa o uniforme escolar</label>
@@ -113,37 +102,32 @@
             <label class="checkbox-item"><input type="checkbox" value="Saiu de sala sem autorização"> Saiu de sala sem autorização</label>
             <label class="checkbox-item"><input type="checkbox" value="Saiu da escola sem autorização"> Saiu da escola sem autorização</label>
         </div>
-
         <label>Observações Adicionais:</label>
         <textarea id="descricao" rows="3" placeholder="Detalhes extras..."></textarea>
-
         <label>Houve algum tipo de agressão?</label>
         <select id="houve-agressao">
             <option value="Não">Não</option>
             <option value="Sim (Física)">Sim (Física)</option>
             <option value="Sim (Verbal)">Sim (Verbal)</option>
         </select>
-
         <label>Penalidades/Sanções:</label>
         <input type="text" id="penalidades" placeholder="Ex: Suspensão ou Advertência">
-
         <label>WhatsApp do Responsável:</label>
         <input type="number" id="whatsapp-fone" placeholder="Ex: 85999999999" inputmode="tel">
-
         <button class="btn-green" onclick="gerarEEnviar()">SALVAR E NOTIFICAR VIA WHATSAPP</button>
     </div>
 </div>
 
 <script>
-    // --- CONFIGURAÇÃO SUPABASE ---
     const SUPABASE_URL = 'https://mspucfzsdpejwnhmwwmk.supabase.co';
     const SUPABASE_KEY = 'sb_publishable_E6S5Xx028e1ue_4EQsj6qA_tBilAr8R';
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // --- LÓGICA DE AUTENTICAÇÃO ---
     function mostrarTela(id) {
         document.getElementById('tela-login').classList.add('hidden');
         document.getElementById('tela-cadastro').classList.add('hidden');
+        document.getElementById('tela-selecao').classList.add('hidden');
+        document.getElementById('tela-formulario').classList.add('hidden');
         document.getElementById(id).classList.remove('hidden');
     }
 
@@ -151,37 +135,30 @@
         const email = document.getElementById('login-email').value;
         const senha = document.getElementById('login-senha').value;
         if(!email || !senha) return alert("Preencha todos os campos");
-
         const { data, error } = await _supabase.auth.signInWithPassword({ email, password: senha });
         if (error) alert("Erro: " + error.message);
-        else {
-            document.getElementById('tela-login').classList.add('hidden');
-            document.getElementById('tela-selecao').classList.remove('hidden');
-        }
+        else mostrarTela('tela-selecao');
     }
 
     async function acaoCadastro() {
         const email = document.getElementById('cad-email').value;
         const senha = document.getElementById('cad-senha').value;
         if(senha.length < 6) return alert("A senha deve ter no mínimo 6 caracteres");
-
         const { data, error } = await _supabase.auth.signUp({ email, password: senha });
         if (error) alert("Erro: " + error.message);
-        else {
-            alert("Cadastro realizado com sucesso! Agora você pode entrar.");
-            mostrarTela('tela-login');
-        }
+        else { alert("Cadastro realizado! Agora você pode entrar."); mostrarTela('tela-login'); }
     }
 
     async function solicitarReset() {
-        const email = prompt("Digite seu e-mail para recuperar a senha:");
+        const email = prompt("Digite seu e-mail para recuperação:");
         if (!email) return;
-        const { error } = await _supabase.auth.resetPasswordForEmail(email);
+        const { error } = await _supabase.auth.resetPasswordForEmail(email, {
+            redirectTo: 'https://ocorrencias-tau.vercel.app/reset-password.html'
+        });
         if (error) alert(error.message);
         else alert("Link de recuperação enviado para o seu e-mail!");
     }
 
-    // --- DADOS E LÓGICA DO SISTEMA ---
     const { jsPDF } = window.jspdf;
     const dadosEscola = {
         integral: {
@@ -236,13 +213,9 @@
         const agr = document.getElementById('houve-agressao').value;
         const pen = document.getElementById('penalidades').value;
         const fone = document.getElementById('whatsapp-fone').value;
-
         const checkboxes = document.querySelectorAll('#tipos-ocorrencia input[type="checkbox"]:checked');
         let tiposSelecionados = Array.from(checkboxes).map(cb => cb.value);
-        
-        if(tiposSelecionados.length === 0 && obsAdicional === "") {
-            return alert("Por favor, selecione ao menos um tipo de ocorrência ou escreva uma observação.");
-        }
+        if(tiposSelecionados.length === 0 && obsAdicional === "") { return alert("Selecione uma ocorrência ou escreva uma observação."); }
         if(!fone) return alert("Preencha o WhatsApp!");
 
         const agora = new Date();
@@ -255,38 +228,25 @@
         doc.text("EEMTI DRAGÃO DO MAR", 105, 15, { align: "center" });
         doc.setFontSize(11);
         doc.text("RELATÓRIO DE OCORRÊNCIA ESCOLAR", 105, 22, { align: "center" });
-        
         doc.setFontSize(10);
         doc.text(`Data: ${dataFormatada} às ${horaFormatada}`, 20, 35);
         doc.text(`Aluno(a): ${aluno}`, 20, 42);
         doc.text(`Turma: ${turma}`, 20, 49);
         doc.line(20, 52, 190, 52);
-
         doc.setFont("helvetica", "bold");
         doc.text("TIPOS DE OCORRÊNCIA:", 20, 60);
         doc.setFont("helvetica", "normal");
         doc.text(textoTipos || "Conforme observações abaixo", 20, 65, { maxWidth: 170 });
-
         doc.setFont("helvetica", "bold");
         doc.text("OBSERVAÇÕES ADICIONAIS:", 20, 85);
         doc.setFont("helvetica", "normal");
         doc.text(obsAdicional || "Nenhuma", 20, 90, { maxWidth: 170 });
-
         doc.text(`Houve Algum Tipo de Agressão ? ${agr}`, 20, 115);
         doc.text(`Sanções: ${pen}`, 20, 125);
-        
         doc.save(`${turma} - ${aluno}.pdf`);
 
         const saudacao = `*📎GOVERNO DO ESTADO DO CEARÁ*%0A%0A📌Olá, somos da escola *EEMTI DRAGÃO DO MAR*. Informamos que um relatório de indisciplina foi gerado para o(a) aluno(a) *${aluno}* em *${dataFormatada}* às *${horaFormatada}*.%0A%0A`;
-        const detalhes = `*➡️DETALHES:*%0A%0A` +
-                         `*🎓Aluno(a):* ${aluno}%0A` +
-                         `*📆Data:* ${dataFormatada} - ${horaFormatada}%0A` +
-                         `*⚠️Ocorrência(s):*%0A ${textoTipos || "Ver observações"}%0A` +
-                         `*📝Observações:* %0A ${obsAdicional || "Não informada"}%0A` +
-                         `*⚠️Houve algum tipo de agressão?* ${agr}%0A` +
-                         `*🚦Sanções:* ${pen}%0A%0A` +
-                         `_💾O arquivo PDF detalhado foi gerado e salvo. Por favor, solicite-o caso necessário ou aguarde o envio manual por este canal._`;
-
+        const detalhes = `*➡️DETALHES:*%0A%0A*🎓Aluno(a):* ${aluno}%0A*📆Data:* ${dataFormatada} - ${horaFormatada}%0A*⚠️Ocorrência(s):*%0A ${textoTipos || "Ver observações"}%0A*📝Observações:* %0A ${obsAdicional || "Não informada"}%0A*⚠️Houve algum tipo de agressão?* ${agr}%0A*🚦Sanções:* ${pen}%0A%0A_💾O arquivo PDF detalhado foi gerado e salvo._`;
         const url = `https://api.whatsapp.com/send?phone=55${fone}&text=${saudacao}${detalhes}`;
         setTimeout(() => { window.open(url, '_blank'); }, 1000);
     }
