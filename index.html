@@ -12,7 +12,6 @@
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f0f2f5; margin: 0; padding: 10px; display: flex; justify-content: center; min-height: 100vh; }
         .container { background: white; padding: 25px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 500px; text-align: center; box-sizing: border-box; align-self: flex-start; margin-top: 20px; position: relative; }
         
-        /* Estilos dos novos botões */
         .header-acoes { display: flex; justify-content: flex-end; margin-bottom: 10px; width: 100%; }
         .btn-sair { background: #ff4d4d; color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.8rem; transition: 0.3s; width: auto; margin-top: 0; }
         .btn-sair:hover { background: #cc0000; }
@@ -38,7 +37,6 @@
 
         .auth-footer { margin-top: 20px; display: flex; justify-content: space-between; font-size: 0.85rem; border-top: 1px solid #eee; padding-top: 15px; }
         .auth-footer a { color: #1a73e8; text-decoration: none; font-weight: 600; cursor: pointer; }
-        .auth-footer a:hover { text-decoration: underline; }
 
         .checkbox-group { text-align: left; background: #f9f9f9; padding: 10px; border-radius: 8px; border: 1px solid #ddd; margin-top: 5px; }
         .checkbox-item { display: flex; align-items: center; margin-bottom: 8px; cursor: pointer; font-size: 0.9rem; }
@@ -140,13 +138,14 @@
     const SUPABASE_KEY = 'sb_publishable_E6S5Xx028e1ue_4EQsj6qA_tBilAr8R';
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+    let professorLogado = "";
+
     function mostrarTela(id) {
         document.getElementById('tela-login').classList.add('hidden');
         document.getElementById('tela-cadastro').classList.add('hidden');
         document.getElementById('tela-selecao').classList.add('hidden');
         document.getElementById('tela-formulario').classList.add('hidden');
         
-        // Controle do botão Sair
         if(id === 'tela-selecao' || id === 'tela-formulario') {
             document.getElementById('header-logado').classList.remove('hidden');
         } else {
@@ -160,9 +159,19 @@
         const email = document.getElementById('login-email').value;
         const senha = document.getElementById('login-senha').value;
         if(!email || !senha) return alert("Preencha todos os campos");
+        
         const { data, error } = await _supabase.auth.signInWithPassword({ email, password: senha });
-        if (error) alert("Erro: " + error.message);
-        else mostrarTela('tela-selecao');
+        
+        if (error) {
+            if (error.message === "Invalid login credentials") {
+                alert("E-mail ou senha incorretos. Por favor, tente novamente.");
+            } else {
+                alert("Erro: " + error.message);
+            }
+        } else {
+            professorLogado = data.user.email;
+            mostrarTela('tela-selecao');
+        }
     }
 
     async function acaoCadastro() {
@@ -215,7 +224,7 @@
         noturno: {
             "1º D": ["ANA PAULA FERREIRA DA SILVA", "ANA LARA LOPES POLICARPO", "CARLOS EDUARDO S. NASCIMENTO", "CARLOS ICARO SOUSA BARRETO", "CARMEN LÚCIA DO NASCIMENTO SANTOS", "CYNTHIA BIANCA RIBEIRO", "DHEIMISON LEANDRO", "DIOGO VINICIUS RIBEIRO DE SOUSA", "EDUARDO DA SILVA SILVEIRA", "FRANCISCA SILVANEIDE DA SILVA", "JOSE CAUA DOS SANTOS RODRIGUES", "LAURA CLARIANE LIMA DUARTE", "LUAN RODRIGUES DE MORAIS", "MARIA FREITAS DE ALMEIDA", "MARIA GABRIELA VERAS FERREIRA", "MARIA VANUSIA COELHO", "NATANAEL LOBAO DA SILVA", "NATIELE GOMES COSTA", "RAYSSA SOUSA COSTA", "ROSA MARIA DA SILVA", "SAMUEL COSTA REBOUCAS", "SIMONE ALVES DE SOUSA", "THAYSSA STHER FELIX REBOUÇAS", "WILCKY SANTOS PEREIRA", "YOHANA CORTEZ DE AZEVEDO", "YURI TEIXEIRA DA SILVA", "Joyse kely", "Marina Rodrigues"],
             "2º D": ["ARIEL LUCAS CARVALHO", "ARIELY LETÍCIA LIMA OLIVEIRA", "CARLOS RYAN OLIVEIRA FERREIRA", "DOUGLAS MARCELO FERNANDES OLIVEIRA DE MELO", "ELOIZA ZAQUEU DA SILVA SANTOS", "EMILY AZEVEDO DOS SANTOS", "FAGNER LUCENA DA SILVA", "FRANCISCO DAVI RIBEIRO FREITAS", "FRANCISCO ELIVERTON ALVES DIAS", "GABRIEL HENRIQUE FREITAS DE CARVALHO", "JOAO MARCOS NOGUEIRA PEREIRA", "JOSE ROMULO FACUNDE DA SILVA", "JULYAM NAYRIS GUEDES ALBUQUERQUE", "KATIANE DE SOUZA JULIAO GOMES", "KAUA CUNHA MATIAS", "LEANDRO RAQUEL GOMES", "LUANA PRISCILA OLIVEIRA", "LUCAS HONORIO DE SOUSA", "MARIA SUYANE BARBOSA GOMES", "MELISSA DOS SANTOS VITURINO", "PEDRO YTALLO ALVES DE ARAUJO MOTA", "RAY PEREIRA ROCHA NOGUEIRA", "RAYANE BERNARDO DA SILVA SOARES", "RIAN DE LIMA NASCIMENTO", "SARA ROCHA DE SENA", "STEPHANY REIS FONSECA", "TAINARA DE SOUZA", "NICOLE KETLIN DE OLIVEIRA", "ANA LUIZA LOMBARDI MESQUITA", "GABRIEL FREITAS DOS SANTOS", "LUZIA KETTILY", "FRANCISCO WEVERTON DOS SANTOS"],
-            "3º C": ["ANA LUISA PEREIRA DOS SANTOS", "ARYANE SILVA DA GUIA", "EDUARDO DA SILVA MACEDO ARAUJO", "ERIANA KEZIA NASCIMENTO RODRIGUES", "FRANCISCA ELLEN CASTRO DOS SANTOS", "GABRIELEM MARIA LIMA DE CASTRO", "IZABELE MARTINS DE SOUSA", "JOAO MARCELO CESARIO DA SILVA", "JONATHAN VITOR DA SILVA ALVES", "KAUA CARDOSO DE OLIVEIRA", "KAUA KEVEN AZEVEDO DA SILVA", "LUIZ DAVI CRUZ DA ROCHA", "MARIA JAMILE DE SOUSA PEREIRA", "MARIA REBECA SILVA DA CRUZ", "MARIANA NASCIMENTO DA SILVA", "NICOLAS ARAUJO DE FREITAS", "SAMUEL RODRIGUES GOMES", "SARA DOS SANTOS HAYASHI", "VITORIA CAROLINE MORAIS DE LIMA", "WESLEY SANTANA FIRMINO", "ISRAEL LUIS DE PAULA ROCHA", "DANILO DOS SANTOS PEREIRA", "LUCAS DIOGO", "GABRIEL VALENTIM", "Adalberto", "Paulo Renan"]
+            "3º C": ["ANA LUISA PEREIRA DOS SANTOS", "ARYANE SILVA DA GUIA", "EDUARDO DA SILVA MACEDO ARAUJO", "ERIANA KEZIA NASCIMENTO RODRIGUES", "FRANCISCA ELLEN CASTRO DOS SANTOS", "GABRIELEM MARIA LIMA DE CASTRO", "IZABELE MARTINS DE SOUSA", "JOAO MARCELO CESARIO DA SILVA", "JONATHAN VITOR DA SILVA ALVES", "KAUA CARDOSO DE OLIVEIRA", "KAUA KEVEN AZEVEDO DA SILVA", "LUIZ DAVI CRUZ DA ROCHA", "MARIA JAMILE DE SOUSA PEREIRA", "MARIA REBECA SILVA DA CRUZ", "MARIANA NASCIMENTO DA SILVA", "NICOLAS ARAUJE DE FREITAS", "SAMUEL RODRIGUES GOMES", "SARA DOS SANTOS HAYASHI", "VITORIA CAROLINE MORAIS DE LIMA", "WESLEY SANTANA FIRMINO", "ISRAEL LUIS DE PAULA ROCHA", "DANILO DOS SANTOS PEREIRA", "LUCAS DIOGO", "GABRIEL VALENTIM", "Adalberto", "Paulo Renan"]
         }
     };
 
@@ -273,21 +282,22 @@
         doc.text(`Data: ${dataFormatada} às ${horaFormatada}`, 20, 35);
         doc.text(`Aluno(a): ${aluno}`, 20, 42);
         doc.text(`Turma: ${turma}`, 20, 49);
-        doc.line(20, 52, 190, 52);
+        doc.text(`Registrado por: ${professorLogado}`, 20, 56);
+        doc.line(20, 59, 190, 59);
         doc.setFont("helvetica", "bold");
-        doc.text("TIPOS DE OCORRÊNCIA:", 20, 60);
+        doc.text("TIPOS DE OCORRÊNCIA:", 20, 67);
         doc.setFont("helvetica", "normal");
-        doc.text(textoTipos || "Conforme observações abaixo", 20, 65, { maxWidth: 170 });
+        doc.text(textoTipos || "Conforme observações abaixo", 20, 72, { maxWidth: 170 });
         doc.setFont("helvetica", "bold");
-        doc.text("OBSERVAÇÕES ADICIONAIS:", 20, 85);
+        doc.text("OBSERVAÇÕES ADICIONAIS:", 20, 92);
         doc.setFont("helvetica", "normal");
-        doc.text(obsAdicional || "Nenhuma", 20, 90, { maxWidth: 170 });
-        doc.text(`Houve Algum Tipo de Agressão ? ${agr}`, 20, 115);
-        doc.text(`Sanções: ${pen}`, 20, 125);
+        doc.text(obsAdicional || "Nenhuma", 20, 97, { maxWidth: 170 });
+        doc.text(`Houve Algum Tipo de Agressão ? ${agr}`, 20, 122);
+        doc.text(`Sanções: ${pen}`, 20, 132);
         doc.save(`${turma} - ${aluno}.pdf`);
 
         const saudacao = `*📎GOVERNO DO ESTADO DO CEARÁ*%0A%0A📌Olá, somos da escola *EEMTI DRAGÃO DO MAR*. Informamos que um relatório de indisciplina foi gerado para o(a) aluno(a) *${aluno}* em *${dataFormatada}* às *${horaFormatada}*.%0A%0A`;
-        const detalhes = `*➡️DETALHES:*%0A%0A*🎓Aluno(a):* ${aluno}%0A*📆Data:* ${dataFormatada} - ${horaFormatada}%0A*⚠️Ocorrência(s):*%0A ${textoTipos || "Ver observações"}%0A*📝Observações:* %0A ${obsAdicional || "Não informada"}%0A*⚠️Houve algum tipo de agressão?* ${agr}%0A*🚦Sanções:* ${pen}%0A%0A_💾O arquivo PDF detalhado foi gerado e salvo._`;
+        const detalhes = `*➡️DETALHES:*%0A%0A*🎓Aluno(a):* ${aluno}%0A*📆Data:* ${dataFormatada} - ${horaFormatada}%0A*⚠️Ocorrência(s):*%0A ${textoTipos || "Ver observações"}%0A*📝Observações:* %0A ${obsAdicional || "Não informada"}%0A*⚠️Houve algum tipo de agressão?* ${agr}%0A*🚦Sanções:* ${pen}%0A*👤Registrado por:* ${professorLogado}%0A%0A_💾O arquivo PDF detalhado foi gerado e salvo._`;
         const url = `https://api.whatsapp.com/send?phone=55${fone}&text=${saudacao}${detalhes}`;
         setTimeout(() => { window.open(url, '_blank'); }, 1000);
     }
