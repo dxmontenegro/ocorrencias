@@ -10,8 +10,17 @@
     
     <style>
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f0f2f5; margin: 0; padding: 10px; display: flex; justify-content: center; min-height: 100vh; }
-        .container { background: white; padding: 25px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 500px; text-align: center; box-sizing: border-box; align-self: flex-start; margin-top: 20px; }
+        .container { background: white; padding: 25px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 500px; text-align: center; box-sizing: border-box; align-self: flex-start; margin-top: 20px; position: relative; }
         
+        /* Estilos dos novos botões */
+        .header-acoes { display: flex; justify-content: flex-end; margin-bottom: 10px; width: 100%; }
+        .btn-sair { background: #ff4d4d; color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.8rem; transition: 0.3s; width: auto; margin-top: 0; }
+        .btn-sair:hover { background: #cc0000; }
+        .flex-buttons { display: flex; gap: 10px; margin-top: 20px; }
+        .flex-buttons button { margin-top: 0; flex: 1; }
+        .btn-secondary { background-color: #6c757d; color: white; }
+        .btn-secondary:hover { background-color: #5a6268; }
+
         .logo-escola { max-width: 100px; height: auto; margin-bottom: 15px; }
         h2, h3 { color: #1a73e8; margin-bottom: 15px; font-size: 1.4rem; }
         p.subtitle { color: #666; margin-top: -10px; margin-bottom: 25px; font-size: 0.9rem; }
@@ -36,12 +45,16 @@
         .checkbox-item input { width: auto; margin-right: 10px; margin-top: 0; transform: scale(1.2); }
 
         .info-aluno { background: #e7f3ff; padding: 12px; border-radius: 8px; margin-bottom: 10px; font-weight: bold; color: #1a73e8; font-size: 1rem; }
-        .hidden { display: none; }
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
 <div class="container">
+    <div class="header-acoes hidden" id="header-logado">
+        <button class="btn-sair" onclick="acaoSair()">SAIR / LOGOUT</button>
+    </div>
+
     <img src="imagem1.png" alt="Logo da Escola" class="logo-escola" onerror="this.style.display='none';">
 
     <div id="tela-login">
@@ -114,7 +127,11 @@
         <input type="text" id="penalidades" placeholder="Ex: Suspensão ou Advertência">
         <label>WhatsApp do Responsável:</label>
         <input type="number" id="whatsapp-fone" placeholder="Ex: 85999999999" inputmode="tel">
-        <button class="btn-green" onclick="gerarEEnviar()">SALVAR E NOTIFICAR VIA WHATSAPP</button>
+        
+        <div class="flex-buttons">
+            <button class="btn-green" onclick="gerarEEnviar()">SALVAR E NOTIFICAR VIA WHATSAPP</button>
+            <button class="btn-secondary" onclick="novaOcorrencia()">NOVA OCORRÊNCIA</button>
+        </div>
     </div>
 </div>
 
@@ -128,6 +145,14 @@
         document.getElementById('tela-cadastro').classList.add('hidden');
         document.getElementById('tela-selecao').classList.add('hidden');
         document.getElementById('tela-formulario').classList.add('hidden');
+        
+        // Controle do botão Sair
+        if(id === 'tela-selecao' || id === 'tela-formulario') {
+            document.getElementById('header-logado').classList.remove('hidden');
+        } else {
+            document.getElementById('header-logado').classList.add('hidden');
+        }
+        
         document.getElementById(id).classList.remove('hidden');
     }
 
@@ -149,6 +174,11 @@
         else { alert("Cadastro realizado! Agora você pode entrar."); mostrarTela('tela-login'); }
     }
 
+    async function acaoSair() {
+        await _supabase.auth.signOut();
+        window.location.reload();
+    }
+
     async function solicitarReset() {
         const email = prompt("Digite seu e-mail para recuperação:");
         if (!email) return;
@@ -157,6 +187,17 @@
         });
         if (error) alert(error.message);
         else alert("Link de recuperação enviado para o seu e-mail!");
+    }
+
+    function novaOcorrencia() {
+        document.getElementById('descricao').value = "";
+        document.getElementById('penalidades').value = "";
+        document.getElementById('whatsapp-fone').value = "";
+        document.getElementById('houve-agressao').value = "Não";
+        const checkboxes = document.querySelectorAll('#tipos-ocorrencia input[type="checkbox"]');
+        checkboxes.forEach(cb => cb.checked = false);
+        mostrarTela('tela-selecao');
+        window.scrollTo(0,0);
     }
 
     const { jsPDF } = window.jspdf;
