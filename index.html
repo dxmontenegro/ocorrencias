@@ -102,19 +102,19 @@
         <div class="info-aluno">Aluno(a): <span id="nome-aluno-confirmado"></span></div>
         <label>Tipo de Ocorrência:</label>
         <div class="checkbox-group" id="tipos-ocorrencia">
-            <label class="checkbox-item"><input type="checkbox" value="Não usa o uniforme escolar"> Não usa o uniforme escolar</label>
-            <label class="checkbox-item"><input type="checkbox" value="Tumultua a aula"> Tumultua a aula</label>
-            <label class="checkbox-item"><input type="checkbox" value="Comporta-se de forma agressiva"> Comporta-se de forma agressiva</label>
-            <label class="checkbox-item"><input type="checkbox" value="Comporta-se de forma agressiva"> Agrediu um(a) colega</label>
-            <label class="checkbox-item"><input type="checkbox" value="Comporta-se de forma agressiva"> Agrediu um(a) professor(a)</label>
-            <label class="checkbox-item"><input type="checkbox" value="Comporta-se de forma agressiva"> Agrediu um(a) funcionário(a)</label>
-            <label class="checkbox-item"><input type="checkbox" value="Chegou em sala atrasado(a)"> Chegou em sala atrasado(a)</label>
-            <label class="checkbox-item"><input type="checkbox" value="Não segue as orientações do professor"> Não segue as orientações do professor</label>
-            <label class="checkbox-item"><input type="checkbox" value="Depreda o patrimônio público"> Depreda o patrimônio público</label>
-            <label class="checkbox-item"><input type="checkbox" value="Usa o celular de forma indevida"> Usa o celular de forma indevida</label>
-            <label class="checkbox-item"><input type="checkbox" value="Desrespeita professores, colegas e/ou funcionários"> Desrespeita professores, colegas e/ou funcionários</label>
-            <label class="checkbox-item"><input type="checkbox" value="Saiu de sala sem autorização"> Saiu de sala sem autorização</label>
-            <label class="checkbox-item"><input type="checkbox" value="Saiu da escola sem autorização"> Saiu da escola sem autorização</label>
+            <label class="checkbox-item"><input type="checkbox" data-label="Não usa o uniforme escolar"> Não usa o uniforme escolar</label>
+            <label class="checkbox-item"><input type="checkbox" data-label="Tumultua a aula"> Tumultua a aula</label>
+            <label class="checkbox-item"><input type="checkbox" data-label="Comporta-se de forma agressiva"> Comporta-se de forma agressiva</label>
+            <label class="checkbox-item"><input type="checkbox" data-label="Agrediu um(a) colega"> Agrediu um(a) colega</label>
+            <label class="checkbox-item"><input type="checkbox" data-label="Agrediu um(a) professor(a)"> Agrediu um(a) professor(a)</label>
+            <label class="checkbox-item"><input type="checkbox" data-label="Agrediu um(a) funcionário(a)"> Agrediu um(a) funcionário(a)</label>
+            <label class="checkbox-item"><input type="checkbox" data-label="Chegou em sala atrasado(a)"> Chegou em sala atrasado(a)</label>
+            <label class="checkbox-item"><input type="checkbox" data-label="Não segue as orientações do professor"> Não segue as orientações do professor</label>
+            <label class="checkbox-item"><input type="checkbox" data-label="Depreda o patrimônio público"> Depreda o patrimônio público</label>
+            <label class="checkbox-item"><input type="checkbox" data-label="Usa o celular de forma indevida"> Usa o celular de forma indevida</label>
+            <label class="checkbox-item"><input type="checkbox" data-label="Desrespeita professores, colegas e/ou funcionários"> Desrespeita professores, colegas e/ou funcionários</label>
+            <label class="checkbox-item"><input type="checkbox" data-label="Saiu de sala sem autorização"> Saiu de sala sem autorização</label>
+            <label class="checkbox-item"><input type="checkbox" data-label="Saiu da escola sem autorização"> Saiu da escola sem autorização</label>
         </div>
         <label>Observações Adicionais:</label>
         <textarea id="descricao" rows="3" placeholder="Detalhes extras sobre o ocorrido..."></textarea>
@@ -140,8 +140,6 @@
     const SUPABASE_URL = 'https://mspucfzsdpejwnhmwwmk.supabase.co';
     const SUPABASE_KEY = 'sb_publishable_E6S5Xx028e1ue_4EQsj6qA_tBilAr8R';
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-    // SEU LINK DO GOOGLE SCRIPT (Mantido o seu /exec)
     const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyMlYTKrLtiiZ5BI7IK7BBby8vW86dEq9WPptSyjacowDDBma1Wim2uSNsanKVuC_Dv/exec'; 
 
     let professorLogado = "";
@@ -151,13 +149,11 @@
         document.getElementById('tela-cadastro').classList.add('hidden');
         document.getElementById('tela-selecao').classList.add('hidden');
         document.getElementById('tela-formulario').classList.add('hidden');
-        
         if(id === 'tela-selecao' || id === 'tela-formulario') {
             document.getElementById('header-logado').classList.remove('hidden');
         } else {
             document.getElementById('header-logado').classList.add('hidden');
         }
-        
         document.getElementById(id).classList.remove('hidden');
     }
 
@@ -165,15 +161,9 @@
         const email = document.getElementById('login-email').value;
         const senha = document.getElementById('login-senha').value;
         if(!email || !senha) return alert("Preencha todos os campos");
-        
         const { data, error } = await _supabase.auth.signInWithPassword({ email, password: senha });
-        
-        if (error) {
-            alert("Erro no login: " + error.message);
-        } else {
-            professorLogado = data.user.email;
-            mostrarTela('tela-selecao');
-        }
+        if (error) alert("Erro no login: " + error.message);
+        else { professorLogado = data.user.email; mostrarTela('tela-selecao'); }
     }
 
     async function acaoCadastro() {
@@ -213,7 +203,7 @@
 
     const { jsPDF } = window.jspdf;
     
-    // --- DADOS ESCOLA ---
+    // --- DADOS ESCOLA (RESTAURADOS) ---
     const dadosEscola = {
         integral: {
             "1º A": ["ANA BEATRIZ CABRAL DA SILVA", "ANA BEATRIZ DANTAS BERNARDO", "ANA BEATRIZ OLIVEIRA SERRA", "ANA CAROLYNA CARNEIRO SOUSA", "ANA LUIZA DE SOUSA LOURENCO", "ANNA JULIA RODRIGUES DE MELO", "DEBORA IOLANDA GOMES DA SILVA", "DEVIDSON RAMOS DE OLIVEIRA", "DIOGO SANTOS FERREIRA", "FERNANDO ERLANIO DE OLIVEIRA AGUIAR", "JESSICA DEBORA SILVA OLIVEIRA", "JOAO GABRIEL SOUSA RODRIGUES", "JOAO LUCAS SOUSA DA COSTA", "JORGE MIGUEL ARAUJO LOPES", "JULIA EVELLEN PAIVA DA SILVA", "KAILANY DA SILVA COSTA", "KAROLLAINY OLIVEIRA SOUSA", "KAUA ARAUJO MENDES", "LUIS GUSTAVO COSTA FERNANDES", "LUNNA DE LIMA ABREU", "MARA LIDIA FERREIRA DE FARIAS", "MARIA ALICIA CARVALHO NUNES", "MARIA CLARA DA CRUZ SILVA", "MARIA EDUARDA BERNARDO SOUZA", "MARIA ISABEL ALVES PEREIRA", "MARYA EDUARDA DOS SANTOS LOBAO", "MOISES ARCANJO FLOR FERREIRA", "RAYSSA DA SILVA RODRIGUES", "RYAN DA SILVA COSTA", "SAMUEL SANTIAGO DE LIMA", "SAMYRA MARIA CAVALCANTE CRUZ", "THALES GABRIEL FERREIRA DE LIMA", "TIAGO TAVARES SOUZA", "YANN FERREIRA SILVA COELHO", "YASMIN SILVA COUTO"],
@@ -260,7 +250,6 @@
         window.scrollTo(0,0);
     }
 
-    // --- NOVA FUNÇÃO GERAR E ENVIAR COM DESIGN UPGRADED ---
     async function gerarEEnviar() {
         const aluno = document.getElementById('nome-aluno-confirmado').innerText;
         const turma = document.getElementById('turma').value;
@@ -268,13 +257,12 @@
         const agr = document.getElementById('houve-agressao').value;
         const pen = document.getElementById('penalidades').value;
         const fone = document.getElementById('whatsapp-fone').value;
-        const checkboxes = document.querySelectorAll('#tipos-ocorrencia input[type="checkbox"]:checked');
-        const todosTipos = document.querySelectorAll('#tipos-ocorrencia input[type="checkbox"]');
         
-        let tiposSelecionados = Array.from(checkboxes).map(cb => cb.value);
-        if(tiposSelecionados.length === 0 && obsAdicional === "") { 
-            return alert("Selecione uma ocorrência ou escreva uma observação."); 
-        }
+        const checkboxes = document.querySelectorAll('#tipos-ocorrencia input[type="checkbox"]');
+        let selecionadosTextos = [];
+        checkboxes.forEach(cb => { if(cb.checked) selecionadosTextos.push(cb.getAttribute('data-label')); });
+
+        if(selecionadosTextos.length === 0 && obsAdicional === "") return alert("Selecione uma ocorrência ou escreva uma observação.");
         if(!fone) return alert("Preencha o WhatsApp!");
 
         const btn = document.getElementById('btn-finalizar');
@@ -285,68 +273,68 @@
         const dataFormatada = agora.toLocaleDateString('pt-BR');
         const horaFormatada = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 
-        // --- INÍCIO DO PDF UPGRADED ---
         const doc = new jsPDF();
         const azulMarinho = [26, 73, 144];
         const cinzaClaro = [248, 249, 250];
 
         // 1. Cabeçalho Colorido
         doc.setFillColor(azulMarinho[0], azulMarinho[1], azulMarinho[2]);
-        doc.rect(0, 0, 210, 40, 'F');
+        doc.rect(0, 0, 210, 55, 'F'); 
         
-        // 2. Inserir Logo imagem1.png
+        // 2. Logo CENTRALIZADO no topo
         try {
             const img = document.getElementById('logo-img');
-            if (img && img.src) doc.addImage(img, 'PNG', 15, 7, 26, 26);
+            if (img && img.src) {
+                doc.addImage(img, 'PNG', 92, 5, 26, 26);
+            }
         } catch (e) { console.warn("Logo não carregado no PDF."); }
 
         doc.setTextColor(255, 255, 255);
         doc.setFont("helvetica", "bold");
         doc.setFontSize(18);
-        doc.text("EEMTI DRAGÃO DO MAR", 110, 20, { align: "center" });
+        doc.text("EEMTI DRAGÃO DO MAR", 105, 38, { align: "center" });
         doc.setFontSize(10);
         doc.setFont("helvetica", "normal");
-        doc.text("RELATÓRIO DE OCORRÊNCIA", 110, 28, { align: "center" });
+        doc.text("COORDENAÇÃO DIGITAL - RELATÓRIO DE OCORRÊNCIA", 105, 46, { align: "center" });
 
         // 3. Box de Dados Gerais
         doc.setTextColor(40, 40, 40);
         doc.setFillColor(cinzaClaro[0], cinzaClaro[1], cinzaClaro[2]);
-        doc.roundedRect(15, 45, 180, 35, 3, 3, 'F');
+        doc.roundedRect(15, 62, 180, 35, 3, 3, 'F');
         doc.setDrawColor(200, 200, 200);
-        doc.roundedRect(15, 45, 180, 35, 3, 3, 'S');
+        doc.roundedRect(15, 62, 180, 35, 3, 3, 'S');
 
         doc.setFontSize(10);
         doc.setFont("helvetica", "bold");
-        doc.text("INFORMAÇÕES GERAIS:", 20, 52);
+        doc.text("INFORMAÇÕES GERAIS:", 20, 69);
         doc.setFont("helvetica", "normal");
-        doc.text(`Aluno(a): ${aluno}`, 20, 60);
-        doc.text(`Turma: ${turma}`, 20, 67);
-        doc.text(`Data/Hora: ${dataFormatada} às ${horaFormatada}`, 20, 74);
-        doc.text(`Registrado por: ${professorLogado}`, 110, 74);
+        doc.text(`Aluno(a): ${aluno}`, 20, 77);
+        doc.text(`Turma: ${turma}`, 20, 84);
+        doc.text(`Data/Hora: ${dataFormatada} às ${horaFormatada}`, 20, 91);
+        doc.text(`Registrado por: ${professorLogado}`, 110, 91);
 
-        // 4. Seção de Tipos (Checklist Moderno)
+        // 4. Checklist Moderno
         doc.setFont("helvetica", "bold");
         doc.setTextColor(azulMarinho[0], azulMarinho[1], azulMarinho[2]);
-        doc.text("ITENS REGISTRADOS:", 15, 95);
-        doc.line(15, 97, 195, 97);
+        doc.text("ITENS REGISTRADOS:", 15, 110);
+        doc.line(15, 112, 195, 112);
 
-        let yPos = 105;
+        let yPos = 120;
         doc.setFontSize(9);
         doc.setTextColor(60, 60, 60);
 
-        todosTipos.forEach((item) => {
+        checkboxes.forEach((item) => {
+            const label = item.getAttribute('data-label');
             if (item.checked) {
-                // Quadrinho azul para selecionado
                 doc.setFillColor(azulMarinho[0], azulMarinho[1], azulMarinho[2]);
                 doc.rect(15, yPos - 3, 3, 3, 'F');
                 doc.setFont("helvetica", "bold");
-                doc.text(item.value, 22, yPos);
+                doc.text(label, 22, yPos);
             } else {
-                // Quadrinho vazio para não selecionado
                 doc.setDrawColor(180, 180, 180);
                 doc.rect(15, yPos - 3, 3, 3, 'S');
                 doc.setFont("helvetica", "normal");
-                doc.text(item.value, 22, yPos);
+                doc.text(label, 22, yPos);
             }
             yPos += 7;
         });
@@ -365,45 +353,32 @@
         doc.text(textoObs, 20, yPos + 15);
         
         doc.setFont("helvetica", "bold");
-        doc.text(`Houve agressão? ${agr}`, 20, yPos + 34);
+        doc.text(`Houve agressão física/verbal? ${agr}`, 20, yPos + 34);
         doc.text(`Sanção aplicada: ${pen || "A definir pela gestão"}`, 20, yPos + 40);
 
-        // Rodapé
         doc.setFontSize(8);
         doc.setTextColor(150, 150, 150);
         doc.text("Documento gerado eletronicamente pela Coordenação da EEMTI DRAGÃO DO MAR.", 105, 285, { align: "center" });
 
-        // --- PROCESSO DE ENVIO AO GOOGLE DRIVE ---
         const pdfBase64 = doc.output('datauristring').split(',')[1];
         const nomeDoArquivo = `${turma} - ${aluno} (${dataFormatada.replace(/\//g, '-')}).pdf`;
 
         try {
             const response = await fetch(GOOGLE_SCRIPT_URL, {
                 method: "POST",
-                body: JSON.stringify({
-                    nomeArquivo: nomeDoArquivo,
-                    base64: pdfBase64
-                })
+                body: JSON.stringify({ nomeArquivo: nomeDoArquivo, base64: pdfBase64 })
             });
-
             const result = await response.json();
             let linkDrive = result.status === "sucesso" ? result.url : "";
 
-            // 6. Mensagem de WhatsApp (Mantendo seu corpo original + Link)
             const saudacao = `*📎 RELATÓRIO DE OCORRÊNCIA DIGITAL*%0A%0A📌 Olá, informamos que um registro de indisciplina foi gerado para o(a) aluno(a) *${aluno}* na escola *EEMTI DRAGÃO DO MAR*.%0A%0A`;
-            const detalhes = `*➡️ DETALHES:*%0A*🎓 Aluno:* ${aluno}%0A*📆 Data:* ${dataFormatada} às ${horaFormatada}%0A*⚠️ Ocorrência(s):* ${tiposSelecionados.join(', ') || "Ver documento"}%0A*👤 Registrado por:* ${professorLogado}%0A%0A_O arquivo PDF detalhado foi arquivado com sucesso na nuvem digital._`;
-            
+            const detalhes = `*➡️ DETALHES:*%0A*🎓 Aluno:* ${aluno}%0A*📆 Data:* ${dataFormatada} às ${horaFormatada}%0A*⚠️ Ocorrência(s):* ${selecionadosTextos.join(', ')}%0A*👤 Registrado por:* ${professorLogado}%0A%0A_O arquivo PDF detalhado foi arquivado com sucesso na nuvem digital._`;
             const linkTexto = linkDrive ? `%0A%0A*📄 ACESSE O DOCUMENTO OFICIAL AQUI:*%0A${linkDrive}` : "";
             
-            const urlFinal = `https://api.whatsapp.com/send?phone=55${fone}&text=${saudacao}${detalhes}${linkTexto}`;
-
-            doc.save(nomeDoArquivo); // Download local
-            window.open(urlFinal, '_blank'); // Abre WhatsApp
-            
+            doc.save(nomeDoArquivo);
+            window.open(`https://api.whatsapp.com/send?phone=55${fone}&text=${saudacao}${detalhes}${linkTexto}`, '_blank');
         } catch (e) {
-            console.error(e);
-            alert("Erro ao conectar com o Google Drive, mas o PDF foi baixado localmente.");
-            window.open(`https://api.whatsapp.com/send?phone=55${fone}&text=Erro ao gerar link. PDF baixado no dispositivo.`, '_blank');
+            alert("Erro ao salvar no Drive, mas o PDF foi baixado.");
         } finally {
             btn.innerText = "SALVAR E ENVIAR WHATSAPP";
             btn.disabled = false;
