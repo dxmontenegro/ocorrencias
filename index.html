@@ -275,7 +275,7 @@
         if(!fone) return alert("Preencha o WhatsApp!");
 
         const btn = document.getElementById('btn-finalizar');
-        btn.innerText = "SINCROZINANDO COM O DRIVE...";
+        btn.innerText = "PROCESSANDO...";
         btn.disabled = true;
 
         const agora = new Date();
@@ -303,7 +303,7 @@
         doc.text("EEMTI DRAGÃO DO MAR", 110, 20, { align: "center" });
         doc.setFontSize(10);
         doc.setFont("helvetica", "normal");
-        doc.text("SECRETARIA DIGITAL - RELATÓRIO DE OCORRÊNCIA", 110, 28, { align: "center" });
+        doc.text("RELATÓRIO DE OCORRÊNCIA", 110, 28, { align: "center" });
 
         // 3. Box de Dados Gerais
         doc.setTextColor(40, 40, 40);
@@ -368,7 +368,7 @@
         // Rodapé
         doc.setFontSize(8);
         doc.setTextColor(150, 150, 150);
-        doc.text("Documento gerado eletronicamente pela Secretaria da EEMTI Dragão do Mar.", 105, 285, { align: "center" });
+        doc.text("Documento gerado eletronicamente pela Coordenação da EEMTI DRAGÃO DO MAR.", 105, 285, { align: "center" });
 
         // --- PROCESSO DE ENVIO AO GOOGLE DRIVE ---
         const pdfBase64 = doc.output('datauristring').split(',')[1];
