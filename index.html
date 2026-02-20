@@ -127,7 +127,7 @@
         <input type="number" id="whatsapp-fone" placeholder="Ex: 85999999999" inputmode="tel">
         
         <div class="flex-buttons">
-            <button class="btn-green" onclick="gerarEEnviar()">SALVAR E NOTIFICAR VIA WHATSAPP</button>
+            <button class="btn-green" id="btn-finalizar" onclick="gerarEEnviar()">SALVAR E NOTIFICAR VIA WHATSAPP</button>
             <button class="btn-secondary" onclick="novaOcorrencia()">NOVA OCORRÊNCIA</button>
         </div>
     </div>
@@ -137,6 +137,9 @@
     const SUPABASE_URL = 'https://mspucfzsdpejwnhmwwmk.supabase.co';
     const SUPABASE_KEY = 'sb_publishable_E6S5Xx028e1ue_4EQsj6qA_tBilAr8R';
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    // SEU LINK DO GOOGLE SCRIPT JÁ CONFIGURADO
+    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyMlYTKrLtiiZ5BI7IK7BBby8vW86dEq9WPptSyjacowDDBma1Wim2uSNsanKVuC_Dv/exec'; 
 
     let professorLogado = "";
 
@@ -256,7 +259,7 @@
         window.scrollTo(0,0);
     }
 
-    function gerarEEnviar() {
+    async function gerarEEnviar() {
         const aluno = document.getElementById('nome-aluno-confirmado').innerText;
         const turma = document.getElementById('turma').value;
         const obsAdicional = document.getElementById('descricao').value;
@@ -264,15 +267,24 @@
         const pen = document.getElementById('penalidades').value;
         const fone = document.getElementById('whatsapp-fone').value;
         const checkboxes = document.querySelectorAll('#tipos-ocorrencia input[type="checkbox"]:checked');
+        
         let tiposSelecionados = Array.from(checkboxes).map(cb => cb.value);
-        if(tiposSelecionados.length === 0 && obsAdicional === "") { return alert("Selecione uma ocorrência ou escreva uma observação."); }
+        if(tiposSelecionados.length === 0 && obsAdicional === "") { 
+            return alert("Selecione uma ocorrência ou escreva uma observação."); 
+        }
         if(!fone) return alert("Preencha o WhatsApp!");
+
+        const btn = document.getElementById('btn-finalizar');
+        const textoOriginal = btn.innerText;
+        btn.innerText = "PROCESSANDO...";
+        btn.disabled = true;
 
         const agora = new Date();
         const dataFormatada = agora.toLocaleDateString('pt-BR');
         const horaFormatada = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
         const textoTipos = tiposSelecionados.join(', ');
 
+        // 1. Criar o PDF
         const doc = new jsPDF();
         doc.setFontSize(14);
         doc.text("EEMTI DRAGÃO DO MAR", 105, 15, { align: "center" });
@@ -294,12 +306,51 @@
         doc.text(obsAdicional || "Nenhuma", 20, 97, { maxWidth: 170 });
         doc.text(`Houve Algum Tipo de Agressão ? ${agr}`, 20, 122);
         doc.text(`Sanções: ${pen}`, 20, 132);
-        doc.save(`${turma} - ${aluno}.pdf`);
 
-        const saudacao = `*📎GOVERNO DO ESTADO DO CEARÁ*%0A%0A📌Olá, somos da escola *EEMTI DRAGÃO DO MAR*. Informamos que um relatório de indisciplina foi gerado para o(a) aluno(a) *${aluno}* em *${dataFormatada}* às *${horaFormatada}*.%0A%0A`;
-        const detalhes = `*➡️DETALHES:*%0A%0A*🎓Aluno(a):* ${aluno}%0A*📆Data:* ${dataFormatada} - ${horaFormatada}%0A*⚠️Ocorrência(s):*%0A ${textoTipos || "Ver observações"}%0A*📝Observações:* %0A ${obsAdicional || "Não informada"}%0A*⚠️Houve algum tipo de agressão?* ${agr}%0A*🚦Sanções:* ${pen}%0A*👤Registrado por:* ${professorLogado}%0A%0A_💾O arquivo PDF detalhado foi gerado e salvo._`;
-        const url = `https://api.whatsapp.com/send?phone=55${fone}&text=${saudacao}${detalhes}`;
-        setTimeout(() => { window.open(url, '_blank'); }, 1000);
+        // 2. Preparar Upload (Base64)
+        const pdfBase64 = doc.output('datauristring').split(',')[1];
+        const nomeDoArquivo = `${turma} - ${aluno}.pdf`;
+
+        try {
+            // Enviar para o Google Drive
+            const response = await fetch(GOOGLE_SCRIPT_URL, {
+                method: "POST",
+                body: JSON.stringify({
+                    nomeArquivo: nomeDoArquivo,
+                    base64: pdfBase64
+                })
+            });
+
+            const result = await response.json();
+            let linkDrive = "";
+            if (result.status === "sucesso") {
+                linkDrive = result.url;
+            }
+
+            // 3. Montar Mensagem WhatsApp (Mantendo seu corpo original + Link do PDF)
+            const saudacao = `*📎GOVERNO DO ESTADO DO CEARÁ*%0A%0A📌Olá, somos da escola *EEMTI DRAGÃO DO MAR*. Informamos que um relatório de indisciplina foi gerado para o(a) aluno(a) *${aluno}* em *${dataFormatada}* às *${horaFormatada}*.%0A%0A`;
+            const detalhes = `*➡️DETALHES:*%0A%0A*🎓Aluno(a):* ${aluno}%0A*📆Data:* ${dataFormatada} - ${horaFormatada}%0A*⚠️Ocorrência(s):*%0A ${textoTipos || "Ver observações"}%0A*📝Observações:* %0A ${obsAdicional || "Não informada"}%0A*⚠️Houve algum tipo de agressão?* ${agr}%0A*🚦Sanções:* ${pen}%0A*👤Registrado por:* ${professorLogado}%0A%0A_💾O arquivo PDF detalhado foi gerado e salvo em nossa nuvem digital._`;
+            
+            // Adiciona o link do PDF no final da mensagem
+            const linkTexto = linkDrive ? `%0A%0A*📄 ACESSE O DOCUMENTO OFICIAL AQUI:*%0A${linkDrive}` : "";
+            
+            const urlFinal = `https://api.whatsapp.com/send?phone=55${fone}&text=${saudacao}${detalhes}${linkTexto}`;
+
+            // 4. Finalização
+            doc.save(nomeDoArquivo); // Baixa localmente por segurança
+            window.open(urlFinal, '_blank'); // Abre WhatsApp com tudo pronto
+            
+        } catch (e) {
+            console.error(e);
+            alert("Erro ao conectar com o Google Drive. O PDF foi baixado, mas o WhatsApp será enviado sem o link do arquivo.");
+            // Fallback para o WhatsApp padrão caso o script falhe
+            const saudacaoErr = `*📎GOVERNO DO ESTADO DO CEARÁ*%0A%0A📌Olá, somos da escola *EEMTI DRAGÃO DO MAR*. Informamos que um relatório de indisciplina foi gerado para o(a) aluno(a) *${aluno}* em *${dataFormatada}* às *${horaFormatada}*.%0A%0A`;
+            const detalhesErr = `*➡️DETALHES:*%0A%0A*🎓Aluno(a):* ${aluno}%0A*📆Data:* ${dataFormatada} - ${horaFormatada}%0A*⚠️Ocorrência(s):*%0A ${textoTipos || "Ver observações"}%0A*📝Observações:* %0A ${obsAdicional || "Não informada"}%0A*⚠️Houve algum tipo de agressão?* ${agr}%0A*🚦Sanções:* ${pen}%0A*👤Registrado por:* ${professorLogado}%0A%0A_💾O arquivo PDF foi gerado._`;
+            window.open(`https://api.whatsapp.com/send?phone=55${fone}&text=${saudacaoErr}${detalhesErr}`, '_blank');
+        } finally {
+            btn.innerText = textoOriginal;
+            btn.disabled = false;
+        }
     }
 </script>
 </body>
