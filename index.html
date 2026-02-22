@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EEMTI Dragão do Mar - Ocorrências 2026</title>
+    <link rel="icon" type="image/png" href="imagem1.png">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -11,69 +12,45 @@
     <style>
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f0f2f5; margin: 0; padding: 10px; display: flex; justify-content: center; min-height: 100vh; }
         .container { background: white; padding: 25px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 500px; text-align: center; box-sizing: border-box; align-self: flex-start; margin-top: 20px; position: relative; }
-        
         .header-acoes { display: flex; justify-content: flex-end; margin-bottom: 10px; width: 100%; }
-        .btn-sair { background: #ff4d4d; color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.8rem; transition: 0.3s; width: auto; margin-top: 0; }
-        .btn-sair:hover { background: #cc0000; }
-        .flex-buttons { display: flex; gap: 10px; margin-top: 20px; }
-        .flex-buttons button { margin-top: 0; flex: 1; }
-        .btn-secondary { background-color: #6c757d; color: white; }
-        .btn-secondary:hover { background-color: #5a6268; }
-
-        /* Estilo das Abas de Navegação */
+        .btn-sair { background: #ff4d4d; color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.8rem; }
         .nav-tabs { display: flex; margin-bottom: 20px; border-bottom: 2px solid #eee; }
         .tab-item { flex: 1; padding: 12px; cursor: pointer; font-weight: bold; color: #666; transition: 0.3s; border-bottom: 3px solid transparent; }
         .tab-item.active { color: #1a73e8; border-bottom-color: #1a73e8; }
-
-        .logo-escola { max-width: 120px; height: auto; margin-bottom: 15px; border-radius: 8px; }
+        .logo-escola { max-width: 120px; margin-bottom: 15px; border-radius: 8px; }
         h2, h3 { color: #1a73e8; margin-bottom: 15px; font-size: 1.4rem; }
-        p.subtitle { color: #666; margin-top: -10px; margin-bottom: 25px; font-size: 0.9rem; }
-        
-        label { font-weight: bold; display: block; margin-top: 12px; color: #444; text-align: left; font-size: 0.95rem; }
-        input, select, textarea { width: 100%; padding: 14px; margin-top: 5px; border: 1.5px solid #ccd1d9; border-radius: 8px; box-sizing: border-box; font-size: 16px; transition: 0.3s; }
-        input:focus { border-color: #1a73e8; outline: none; box-shadow: 0 0 0 3px rgba(26,115,232,0.1); }
-        
+        label { font-weight: bold; display: block; margin-top: 12px; color: #444; text-align: left; }
+        input, select, textarea { width: 100%; padding: 14px; margin-top: 5px; border: 1.5px solid #ccd1d9; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
         button { width: 100%; padding: 16px; margin-top: 20px; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; transition: 0.3s; }
         .btn-blue { background-color: #1a73e8; color: white; }
-        .btn-blue:hover { background-color: #1557b0; }
         .btn-green { background-color: #25d366; color: white; }
-        .btn-green:hover { background-color: #128c7e; }
-        button:active { transform: scale(0.98); }
-
-        .auth-footer { margin-top: 20px; display: flex; justify-content: space-between; font-size: 0.85rem; border-top: 1px solid #eee; padding-top: 15px; }
-        .auth-footer a { color: #1a73e8; text-decoration: none; font-weight: 600; cursor: pointer; }
-
-        .checkbox-group { text-align: left; background: #f9f9f9; padding: 10px; border-radius: 8px; border: 1px solid #ddd; margin-top: 5px; }
+        .btn-secondary { background-color: #6c757d; color: white; }
+        .checkbox-group { text-align: left; background: #f9f9f9; padding: 10px; border-radius: 8px; border: 1px solid #ddd; margin-top: 5px; max-height: 250px; overflow-y: auto; }
         .checkbox-item { display: flex; align-items: center; margin-bottom: 8px; cursor: pointer; font-size: 0.9rem; }
-        .checkbox-item input { width: auto; margin-right: 10px; margin-top: 0; transform: scale(1.2); }
-
-        .info-aluno { background: #e7f3ff; padding: 12px; border-radius: 8px; margin-bottom: 10px; font-weight: bold; color: #1a73e8; font-size: 1rem; }
-        
-        /* Estilos da Consulta */
-        .card-ocorrencia { background: #fff; border: 1px solid #ddd; border-left: 5px solid #1a73e8; padding: 15px; border-radius: 8px; margin-top: 15px; text-align: left; font-size: 0.9rem; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .card-ocorrencia b { color: #1a73e8; }
-        .card-ocorrencia hr { border: 0; border-top: 1px solid #eee; margin: 10px 0; }
-
+        .checkbox-item input { width: auto; margin-right: 10px; transform: scale(1.1); }
+        .info-aluno { background: #e7f3ff; padding: 12px; border-radius: 8px; margin-bottom: 10px; font-weight: bold; color: #1a73e8; }
+        .card-ocorrencia { background: #fff; border: 1px solid #ddd; border-left: 5px solid #1a73e8; padding: 15px; border-radius: 8px; margin-top: 15px; text-align: left; font-size: 0.85rem; }
+        .btn-pdf-link { display: block; margin-top: 10px; padding: 10px; background: #1a73e8; color: white; text-decoration: none; border-radius: 8px; text-align: center; font-weight: bold; }
         .hidden { display: none !important; }
+        .auth-footer { margin-top: 20px; display: flex; justify-content: space-between; font-size: 0.85rem; }
+        .auth-footer a { color: #1a73e8; cursor: pointer; font-weight: bold; text-decoration: none; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="header-acoes hidden" id="header-logado">
-        <button class="btn-sair" onclick="acaoSair()">SAIR / LOGOUT</button>
+        <button class="btn-sair" onclick="acaoSair()">SAIR</button>
     </div>
 
-    <img src="imagem1.png" alt="Logo da Escola" id="logo-img" class="logo-escola" onerror="this.style.display='none';">
+    <img src="imagem1.png" alt="Logo" class="logo-escola">
 
     <div id="tela-login">
         <h2>EEMTI DRAGÃO DO MAR</h2>
-        <p class="subtitle">Coordenação digital de Ocorrências</p>
-        <label>E-mail</label>
-        <input type="email" id="login-email" placeholder="seu@email.com">
-        <label>Senha</label>
-        <input type="password" id="login-senha" placeholder="Digite sua senha">
-        <button class="btn-blue" onclick="acaoLogin()">ENTRAR NO SISTEMA</button>
+        <p style="color:#666; margin-top:-10px">Gestão de Ocorrências 2026</p>
+        <input type="email" id="login-email" placeholder="E-mail">
+        <input type="password" id="login-senha" placeholder="Senha">
+        <button class="btn-blue" onclick="acaoLogin()">ENTRAR</button>
         <div class="auth-footer">
             <a onclick="solicitarReset()">Esqueceu a senha?</a>
             <a onclick="mostrarTela('tela-cadastro')">Criar conta</a>
@@ -82,15 +59,10 @@
 
     <div id="tela-cadastro" class="hidden">
         <h2>Novo Cadastro</h2>
-        <p class="subtitle">Crie seu acesso de professor</p>
-        <label>E-mail Institucional</label>
-        <input type="email" id="cad-email" placeholder="professor@escola.com">
-        <label>Defina uma Senha</label>
-        <input type="password" id="cad-senha" placeholder="Mínimo 6 caracteres">
+        <input type="email" id="cad-email" placeholder="Seu melhor e-mail">
+        <input type="password" id="cad-senha" placeholder="Crie uma senha (mín. 6 chars)">
         <button class="btn-blue" onclick="acaoCadastro()">CADASTRAR</button>
-        <div class="auth-footer">
-            <a onclick="mostrarTela('tela-login')" style="width: 100%; text-align: center;">Já tem uma conta? Faça login</a>
-        </div>
+        <button class="btn-secondary" onclick="mostrarTela('tela-login')">VOLTAR</button>
     </div>
 
     <div id="tela-selecao" class="hidden">
@@ -98,23 +70,19 @@
             <div id="tab-registro" class="tab-item active" onclick="alternarAba('registro')">REGISTRAR</div>
             <div id="tab-consulta" class="tab-item" onclick="alternarAba('consulta')">CONSULTAR</div>
         </div>
-
         <div id="form-selecao">
-            <h2>Nova Ocorrência</h2>
             <label>Modalidade:</label>
             <select id="modalidade" onchange="atualizarTurmas()">
                 <option value="">Selecione...</option>
-                <option value="integral">Integral (Manhã/Tarde)</option>
+                <option value="integral">Integral</option>
                 <option value="noturno">Noturno</option>
             </select>
             <label>Turma:</label>
-            <select id="turma" onchange="atualizarAlunos()"><option value="">Aguardando modalidade...</option></select>
+            <select id="turma" onchange="atualizarAlunos()"><option value="">Selecione a turma...</option></select>
             <label>Aluno:</label>
-            <select id="aluno"><option value="">Aguardando turma...</option></select>
-            
-            <button id="btn-avancar" class="btn-blue" onclick="acaoBotaoPrincipal()">CRIAR FORMULÁRIO</button>
+            <select id="aluno"><option value="">Selecione o aluno...</option></select>
+            <button id="btn-avancar" class="btn-blue" onclick="acaoBotaoPrincipal()">AVANÇAR</button>
         </div>
-
         <div id="resultados-consulta" class="hidden">
             <div id="lista-ocorrencias-aluno"></div>
             <button class="btn-secondary" onclick="limparConsulta()">VOLTAR</button>
@@ -122,41 +90,39 @@
     </div>
 
     <div id="tela-formulario" class="hidden">
-        <h3>Registro de Indisciplina</h3>
-        <div class="info-aluno">Aluno(a): <span id="nome-aluno-confirmado"></span></div>
-        <label>Tipo de Ocorrência:</label>
+        <h3>Nova Ocorrência</h3>
+        <div class="info-aluno">📌 <span id="nome-aluno-confirmado"></span></div>
+        
+        <label>Selecione as Indisciplinas:</label>
         <div class="checkbox-group" id="tipos-ocorrencia">
             <label class="checkbox-item"><input type="checkbox" data-label="Não usa o uniforme escolar"> Não usa o uniforme escolar</label>
-            <label class="checkbox-item"><input type="checkbox" data-label="Tumultua a aula"> Tumultua a aula</label>
-            <label class="checkbox-item"><input type="checkbox" data-label="Comporta-se de forma agressiva"> Comporta-se de forma agressiva</label>
-            <label class="checkbox-item"><input type="checkbox" data-label="Agrediu um(a) colega"> Agrediu um(a) colega</label>
-            <label class="checkbox-item"><input type="checkbox" data-label="Agrediu um(a) professor(a)"> Agrediu um(a) professor(a)</label>
-            <label class="checkbox-item"><input type="checkbox" data-label="Agrediu um(a) funcionário(a)"> Agrediu um(a) funcionário(a)</label>
-            <label class="checkbox-item"><input type="checkbox" data-label="Chegou em sala atrasado(a)"> Chegou em sala atrasado(a)</label>
-            <label class="checkbox-item"><input type="checkbox" data-label="Não segue as orientações do professor"> Não segue as orientações do professor</label>
-            <label class="checkbox-item"><input type="checkbox" data-label="Depreda o patrimônio público"> Depreda o patrimônio público</label>
-            <label class="checkbox-item"><input type="checkbox" data-label="Usa o celular de forma indevida"> Usa o celular de forma indevida</label>
-            <label class="checkbox-item"><input type="checkbox" data-label="Desrespeita professores, colegas e/ou funcionários"> Desrespeita professores, colegas e/ou funcionários</label>
-            <label class="checkbox-item"><input type="checkbox" data-label="Saiu de sala sem autorização"> Saiu de sala sem autorização</label>
-            <label class="checkbox-item"><input type="checkbox" data-label="Saiu da escola sem autorização"> Saiu da escola sem autorização</label>
+            <label class="checkbox-item"><input type="checkbox" data-label="Uso indevido do celular em sala"> Uso indevido do celular em sala</label>
+            <label class="checkbox-item"><input type="checkbox" data-label="Ausência de sala sem autorização"> Ausência de sala sem autorização</label>
+            <label class="checkbox-item"><input type="checkbox" data-label="Conversa excessiva/Tumulto"> Conversa excessiva/Tumulto</label>
+            <label class="checkbox-item"><input type="checkbox" data-label="Desrespeito com professor/funcionário"> Desrespeito com professor/funcionário</label>
+            <label class="checkbox-item"><input type="checkbox" data-label="Agressão verbal contra colega"> Agressão verbal contra colega</label>
+            <label class="checkbox-item"><input type="checkbox" data-label="Agressão física (Luta/Briga)"> Agressão física (Luta/Briga)</label>
+            <label class="checkbox-item"><input type="checkbox" data-label="Dano ao patrimônio público"> Dano ao patrimônio público</label>
+            <label class="checkbox-item"><input type="checkbox" data-label="Brincadeiras inadequadas"> Brincadeiras inadequadas</label>
+            <label class="checkbox-item"><input type="checkbox" data-label="Atraso para o início da aula"> Atraso para o início da aula</label>
+            <label class="checkbox-item"><input type="checkbox" data-label="Uso de boné/acessórios proibidos"> Uso de boné/acessórios proibidos</label>
+            <label class="checkbox-item"><input type="checkbox" data-label="Recusa em realizar atividades"> Recusa em realizar atividades</label>
+            <label class="checkbox-item"><input type="checkbox" data-label="Linguagem imprópria/Palavrões"> Linguagem imprópria/Palavrões</label>
+            <label class="checkbox-item"><input type="checkbox" data-label="Saída antecipada da escola"> Saída antecipada da escola</label>
+            <label class="checkbox-item"><input type="checkbox" data-label="Comportamento inadequado no refeitório"> Comportamento inadequado no refeitório</label>
         </div>
-        <label>Observações Adicionais:</label>
-        <textarea id="descricao" rows="3" placeholder="Detalhes extras sobre o ocorrido..."></textarea>
-        <label>Houve algum tipo de agressão?</label>
-        <select id="houve-agressao">
-            <option value="Não">Não</option>
-            <option value="Sim (Física)">Sim (Física)</option>
-            <option value="Sim (Verbal)">Sim (Verbal)</option>
-        </select>
-        <label>Penalidades/Sanções:</label>
-        <input type="text" id="penalidades" placeholder="Ex: Suspensão ou Advertência">
+
+        <label>Descrição dos Fatos:</label>
+        <textarea id="descricao" rows="4" placeholder="Relate os detalhes do ocorrido..."></textarea>
+        <label>Houve algum tipo de Agressão?</label>
+        <select id="houve-agressao"><option>Não</option><option>Sim (Física)</option><option>Sim (Verbal)</option></select>
+        <label>Medida Adotada / Sanção:</label>
+        <input type="text" id="penalidades" placeholder="Ex: Advertência, Suspensão, Chamada do resp.">
         <label>WhatsApp do Responsável:</label>
-        <input type="number" id="whatsapp-fone" placeholder="Ex: 85999999999" inputmode="tel">
+        <input type="number" id="whatsapp-fone" placeholder="85900000000">
         
-        <div class="flex-buttons">
-            <button class="btn-green" id="btn-finalizar" onclick="gerarEEnviar()">SALVAR E ENVIAR WHATSAPP</button>
-            <button class="btn-secondary" onclick="novaOcorrencia()">LIMPAR</button>
-        </div>
+        <button class="btn-green" id="btn-finalizar" onclick="gerarEEnviar()">SALVAR E ENVIAR TUDO</button>
+        <button class="btn-secondary" onclick="novaOcorrencia()">CANCELAR</button>
     </div>
 </div>
 
@@ -169,136 +135,7 @@
     let professorLogado = "";
     let abaAtual = "registro";
 
-    function mostrarTela(id) {
-        document.getElementById('tela-login').classList.add('hidden');
-        document.getElementById('tela-cadastro').classList.add('hidden');
-        document.getElementById('tela-selecao').classList.add('hidden');
-        document.getElementById('tela-formulario').classList.add('hidden');
-        if(id === 'tela-selecao' || id === 'tela-formulario') {
-            document.getElementById('header-logado').classList.remove('hidden');
-        } else {
-            document.getElementById('header-logado').classList.add('hidden');
-        }
-        document.getElementById(id).classList.remove('hidden');
-    }
-
-    function alternarAba(aba) {
-        abaAtual = aba;
-        document.getElementById('tab-registro').classList.toggle('active', aba === 'registro');
-        document.getElementById('tab-consulta').classList.toggle('active', aba === 'consulta');
-        document.getElementById('btn-avancar').innerText = aba === 'registro' ? 'CRIAR FORMULÁRIO' : 'BUSCAR REGISTROS';
-        limparConsulta();
-    }
-
-    async function acaoBotaoPrincipal() {
-        if(abaAtual === 'registro') {
-            abrirFormulario();
-        } else {
-            consultarOcorrencias();
-        }
-    }
-
-    async function consultarOcorrencias() {
-        const aluno = document.getElementById('aluno').value;
-        const turma = document.getElementById('turma').value;
-        if(!aluno) return alert("Selecione o aluno para consultar!");
-
-        const btn = document.getElementById('btn-avancar');
-        btn.innerText = "BUSCANDO...";
-        
-        // Buscando na tabela 'ocorrencias' (Note: os campos devem existir no seu Supabase)
-        const { data, error } = await _supabase
-            .from('ocorrencias')
-            .select('*')
-            .eq('aluno', aluno)
-            .eq('turma', turma)
-            .order('id', { ascending: false });
-
-        if (error) {
-            alert("Erro ao buscar registros. Verifique a conexão com o banco.");
-        } else {
-            exibirResultados(data);
-        }
-        btn.innerText = "BUSCAR REGISTROS";
-    }
-
-    function exibirResultados(dados) {
-        document.getElementById('form-selecao').classList.add('hidden');
-        document.getElementById('resultados-consulta').classList.remove('hidden');
-        const lista = document.getElementById('lista-ocorrencias-aluno');
-        lista.innerHTML = `<h3>Registros de: ${document.getElementById('aluno').value}</h3>`;
-
-        if(dados.length === 0) {
-            lista.innerHTML += `<p>Nenhum registro encontrado para este aluno.</p>`;
-            return;
-        }
-
-        dados.forEach(oc => {
-            lista.innerHTML += `
-                <div class="card-ocorrencia">
-                    <b>Data:</b> ${oc.data_hora || 'Não registrada'}<br>
-                    <b>Itens:</b> ${oc.tipos_selecionados}<br>
-                    <b>Observações:</b> ${oc.observacoes || 'Sem detalhes'}<br>
-                    <hr>
-                    <b>Sanção:</b> ${oc.penalidades || 'Nenhuma'}<br>
-                    <small>Registrado por: ${oc.professor}</small>
-                </div>
-            `;
-        });
-    }
-
-    function limparConsulta() {
-        document.getElementById('form-selecao').classList.remove('hidden');
-        document.getElementById('resultados-consulta').classList.add('hidden');
-    }
-
-    async function acaoLogin() {
-        const email = document.getElementById('login-email').value;
-        const senha = document.getElementById('login-senha').value;
-        if(!email || !senha) return alert("Preencha todos os campos");
-        const { data, error } = await _supabase.auth.signInWithPassword({ email, password: senha });
-        if (error) alert("Erro no login: " + error.message);
-        else { professorLogado = data.user.email; mostrarTela('tela-selecao'); }
-    }
-
-    async function acaoCadastro() {
-        const email = document.getElementById('cad-email').value;
-        const senha = document.getElementById('cad-senha').value;
-        if(senha.length < 6) return alert("A senha deve ter no mínimo 6 caracteres");
-        const { data, error } = await _supabase.auth.signUp({ email, password: senha });
-        if (error) alert("Erro: " + error.message);
-        else { alert("Cadastro realizado! Agora você pode entrar."); mostrarTela('tela-login'); }
-    }
-
-    async function acaoSair() {
-        await _supabase.auth.signOut();
-        window.location.reload();
-    }
-
-    async function solicitarReset() {
-        const email = prompt("Digite seu e-mail para recuperação:");
-        if (!email) return;
-        const { error } = await _supabase.auth.resetPasswordForEmail(email, {
-            redirectTo: 'https://ocorrencias-tau.vercel.app/reset-password.html'
-        });
-        if (error) alert(error.message);
-        else alert("Link de recuperação enviado para o seu e-mail!");
-    }
-
-    function novaOcorrencia() {
-        document.getElementById('descricao').value = "";
-        document.getElementById('penalidades').value = "";
-        document.getElementById('whatsapp-fone').value = "";
-        document.getElementById('houve-agressao').value = "Não";
-        const checkboxes = document.querySelectorAll('#tipos-ocorrencia input[type="checkbox"]');
-        checkboxes.forEach(cb => cb.checked = false);
-        mostrarTela('tela-selecao');
-        window.scrollTo(0,0);
-    }
-
-    const { jsPDF } = window.jspdf;
-    
-    // --- DADOS ESCOLA ---
+    // --- DADOS ESCOLA (RESTAURADOS) ---
     const dadosEscola = {
         integral: {
             "1º A": ["ANA BEATRIZ CABRAL DA SILVA", "ANA BEATRIZ DANTAS BERNARDO", "ANA BEATRIZ OLIVEIRA SERRA", "ANA CAROLYNA CARNEIRO SOUSA", "ANA LUIZA DE SOUSA LOURENCO", "ANNA JULIA RODRIGUES DE MELO", "DEBORA IOLANDA GOMES DA SILVA", "DEVIDSON RAMOS DE OLIVEIRA", "DIOGO SANTOS FERREIRA", "FERNANDO ERLANIO DE OLIVEIRA AGUIAR", "JESSICA DEBORA SILVA OLIVEIRA", "JOAO GABRIEL SOUSA RODRIGUES", "JOAO LUCAS SOUSA DA COSTA", "JORGE MIGUEL ARAUJO LOPES", "JULIA EVELLEN PAIVA DA SILVA", "KAILANY DA SILVA COSTA", "KAROLLAINY OLIVEIRA SOUSA", "KAUA ARAUJO MENDES", "LUIS GUSTAVO COSTA FERNANDES", "LUNNA DE LIMA ABREU", "MARA LIDIA FERREIRA DE FARIAS", "MARIA ALICIA CARVALHO NUNES", "MARIA CLARA DA CRUZ SILVA", "MARIA EDUARDA BERNARDO SOUZA", "MARIA ISABEL ALVES PEREIRA", "MARYA EDUARDA DOS SANTOS LOBAO", "MOISES ARCANJO FLOR FERREIRA", "RAYSSA DA SILVA RODRIGUES", "RYAN DA SILVA COSTA", "SAMUEL SANTIAGO DE LIMA", "SAMYRA MARIA CAVALCANTE CRUZ", "THALES GABRIEL FERREIRA DE LIMA", "TIAGO TAVARES SOUZA", "YANN FERREIRA SILVA COELHO", "YASMIN SILVA COUTO"],
@@ -317,176 +154,200 @@
         }
     };
 
+    // --- NAVEGAÇÃO ---
+    function mostrarTela(id) {
+        document.querySelectorAll('.container > div').forEach(div => { if(div.id) div.classList.add('hidden'); });
+        if(['tela-selecao','tela-formulario'].includes(id)) document.getElementById('header-logado').classList.remove('hidden');
+        else document.getElementById('header-logado').classList.add('hidden');
+        document.getElementById(id).classList.remove('hidden');
+    }
+
+    function alternarAba(aba) {
+        abaAtual = aba;
+        document.getElementById('tab-registro').classList.toggle('active', aba === 'registro');
+        document.getElementById('tab-consulta').classList.toggle('active', aba === 'consulta');
+        document.getElementById('btn-avancar').innerText = aba === 'registro' ? 'AVANÇAR' : 'BUSCAR REGISTROS';
+        limparConsulta();
+    }
+
     function atualizarTurmas() {
         const mod = document.getElementById('modalidade').value;
         const sel = document.getElementById('turma');
-        sel.innerHTML = '<option value="">Selecione a turma...</option>';
-        if(mod && dadosEscola[mod]) {
-            Object.keys(dadosEscola[mod]).forEach(t => sel.innerHTML += `<option value="${t}">${t}</option>`);
-        }
+        sel.innerHTML = '<option value="">Selecione...</option>';
+        if(mod) Object.keys(dadosEscola[mod]).forEach(t => sel.innerHTML += `<option value="${t}">${t}</option>`);
     }
 
     function atualizarAlunos() {
         const mod = document.getElementById('modalidade').value;
         const tur = document.getElementById('turma').value;
         const sel = document.getElementById('aluno');
-        sel.innerHTML = '<option value="">Selecione o aluno...</option>';
-        if(mod && tur && dadosEscola[mod][tur]) {
-            dadosEscola[mod][tur].sort().forEach(a => sel.innerHTML += `<option value="${a}">${a}</option>`);
+        sel.innerHTML = '<option value="">Selecione...</option>';
+        if(mod && tur) dadosEscola[mod][tur].sort().forEach(a => sel.innerHTML += `<option value="${a}">${a}</option>`);
+    }
+
+    // --- AUTENTICAÇÃO E RESET ---
+    async function acaoLogin() {
+        const email = document.getElementById('login-email').value;
+        const senha = document.getElementById('login-senha').value;
+        const { data, error } = await _supabase.auth.signInWithPassword({ email, password: senha });
+        if (error) alert("Credenciais incorretas.");
+        else { professorLogado = data.user.email; mostrarTela('tela-selecao'); }
+    }
+
+    async function solicitarReset() {
+        const email = prompt("Digite seu e-mail para receber o link de recuperação:");
+        if (!email) return;
+        const { error } = await _supabase.auth.resetPasswordForEmail(email, {
+            redirectTo: 'https://ocorrencias-tau.vercel.app/reset-password.html'
+        });
+        if (error) alert("Erro: " + error.message);
+        else alert("Link enviado! Verifique sua caixa de entrada.");
+    }
+
+    async function acaoSair() { await _supabase.auth.signOut(); window.location.reload(); }
+
+    // --- CONSULTA ---
+    async function acaoBotaoPrincipal() {
+        const aluno = document.getElementById('aluno').value;
+        if(!aluno) return alert("Por favor, selecione um aluno.");
+        if(abaAtual === 'registro') {
+            document.getElementById('nome-aluno-confirmado').innerText = aluno;
+            mostrarTela('tela-formulario');
+        } else {
+            const { data, error } = await _supabase.from('ocorrencias').select('*').eq('aluno', aluno).order('id', { ascending: false });
+            if (error) alert("Erro ao carregar histórico.");
+            else exibirResultados(data);
         }
     }
 
-    function abrirFormulario() {
-        const alunoSel = document.getElementById('aluno').value;
-        if(!alunoSel) return alert("Selecione um aluno!");
-        document.getElementById('nome-aluno-confirmado').innerText = alunoSel;
-        document.getElementById('tela-selecao').classList.add('hidden');
-        document.getElementById('tela-formulario').classList.remove('hidden');
-        window.scrollTo(0,0);
+    function exibirResultados(dados) {
+        document.getElementById('form-selecao').classList.add('hidden');
+        document.getElementById('resultados-consulta').classList.remove('hidden');
+        const lista = document.getElementById('lista-ocorrencias-aluno');
+        lista.innerHTML = `<h3>Ocorrências: ${document.getElementById('aluno').value}</h3>`;
+        if(dados.length === 0) { lista.innerHTML += "<p>Nenhum registro encontrado para este aluno.</p>"; return; }
+        dados.forEach(oc => {
+            const link = oc.url_pdf ? `<a href="${oc.url_pdf}" target="_blank" class="btn-pdf-link">📄 ACESSAR DOCUMENTO ORIGINAL</a>` : "";
+            lista.innerHTML += `
+                <div class="card-ocorrencia">
+                    <b>📅 Data:</b> ${oc.data_hora}<br>
+                    <b>⚠️ Itens:</b> ${oc.tipos_selecionados}<br>
+                    <b>⚖️ Sanção:</b> ${oc.penalidades || 'A definir'}
+                    <hr>${link}
+                </div>`;
+        });
+    }
+
+    function limparConsulta() { document.getElementById('form-selecao').classList.remove('hidden'); document.getElementById('resultados-consulta').classList.add('hidden'); }
+
+    // --- GERAÇÃO DE PDF E WHATSAPP ---
+    function novaOcorrencia() { 
+        document.getElementById('descricao').value = ""; 
+        document.getElementById('penalidades').value = "";
+        document.querySelectorAll('#tipos-ocorrencia input').forEach(c => c.checked = false);
+        mostrarTela('tela-selecao'); 
     }
 
     async function gerarEEnviar() {
         const aluno = document.getElementById('nome-aluno-confirmado').innerText;
         const turma = document.getElementById('turma').value;
-        const obsAdicional = document.getElementById('descricao').value;
+        const obs = document.getElementById('descricao').value;
         const agr = document.getElementById('houve-agressao').value;
         const pen = document.getElementById('penalidades').value;
         const fone = document.getElementById('whatsapp-fone').value;
         
-        const checkboxes = document.querySelectorAll('#tipos-ocorrencia input[type="checkbox"]');
-        let selecionadosTextos = [];
-        checkboxes.forEach(cb => { if(cb.checked) selecionadosTextos.push(cb.getAttribute('data-label')); });
-
-        if(selecionadosTextos.length === 0 && obsAdicional === "") return alert("Selecione uma ocorrência ou escreva uma observação.");
-        if(!fone) return alert("Preencha o WhatsApp!");
+        let selecionados = [];
+        document.querySelectorAll('#tipos-ocorrencia input:checked').forEach(c => selecionados.push(c.getAttribute('data-label')));
+        
+        if(selecionados.length === 0 && !obs) return alert("Marque pelo menos uma indisciplina.");
+        if(!fone) return alert("Número do responsável é obrigatório.");
 
         const btn = document.getElementById('btn-finalizar');
-        btn.innerText = "PROCESSANDO...";
-        btn.disabled = true;
+        btn.innerText = "PROCESSANDO..."; btn.disabled = true;
 
         const agora = new Date();
-        const dataFormatada = agora.toLocaleDateString('pt-BR');
-        const horaFormatada = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+        const dataF = agora.toLocaleDateString('pt-BR');
+        const horaF = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 
-        // --- SALVAMENTO NO SUPABASE PARA CONSULTA ---
-        await _supabase.from('ocorrencias').insert([{
-            aluno: aluno,
-            turma: turma,
-            tipos_selecionados: selecionadosTextos.join(', '),
-            observacoes: obsAdicional,
-            agressao: agr,
-            penalidades: pen,
-            professor: professorLogado,
-            data_hora: `${dataFormatada} às ${horaFormatada}`
-        }]);
-
-        // --- LÓGICA DO PDF (ESTILO ORIGINAL RESTAURADO) ---
-        const doc = new jsPDF();
-        const azulMarinho = [26, 73, 144];
-        const cinzaClaro = [248, 249, 250];
-
-        doc.setFillColor(azulMarinho[0], azulMarinho[1], azulMarinho[2]);
-        doc.rect(0, 0, 210, 55, 'F'); 
+        // --- GERAÇÃO DO PDF (DESIGN MELHORADO) ---
+        const doc = new jspdf.jsPDF();
         
-        try {
-            const img = document.getElementById('logo-img');
-            if (img && img.src) {
-                doc.addImage(img, 'PNG', 92, 5, 26, 26);
-            }
-        } catch (e) { console.warn("Logo não carregado no PDF."); }
-
-        doc.setTextColor(255, 255, 255);
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(18);
-        doc.text("EEMTI DRAGÃO DO MAR", 105, 38, { align: "center" });
-        doc.setFontSize(10);
-        doc.setFont("helvetica", "normal");
-        doc.text("COORDENAÇÃO DIGITAL - RELATÓRIO DE OCORRÊNCIA", 105, 46, { align: "center" });
-
-        doc.setTextColor(40, 40, 40);
-        doc.setFillColor(cinzaClaro[0], cinzaClaro[1], cinzaClaro[2]);
-        doc.roundedRect(15, 62, 180, 35, 3, 3, 'F');
-        doc.setDrawColor(200, 200, 200);
-        doc.roundedRect(15, 62, 180, 35, 3, 3, 'S');
-
-        doc.setFontSize(10);
-        doc.setFont("helvetica", "bold");
-        doc.text("INFORMAÇÕES GERAIS:", 20, 69);
-        doc.setFont("helvetica", "normal");
-        doc.text(`Aluno(a): ${aluno}`, 20, 77);
-        doc.text(`Turma: ${turma}`, 20, 84);
-        doc.text(`Data/Hora: ${dataFormatada} às ${horaFormatada}`, 20, 91);
-        doc.text(`Registrado por: ${professorLogado}`, 110, 91);
-
-        doc.setFont("helvetica", "bold");
-        doc.setTextColor(azulMarinho[0], azulMarinho[1], azulMarinho[2]);
-        doc.text("ITENS REGISTRADOS:", 15, 110);
-        doc.line(15, 112, 195, 112);
-
-        let yPos = 120;
-        doc.setFontSize(9);
-        doc.setTextColor(60, 60, 60);
-
-        checkboxes.forEach((item) => {
-            const label = item.getAttribute('data-label');
-            if (item.checked) {
-                doc.setFillColor(azulMarinho[0], azulMarinho[1], azulMarinho[2]);
-                doc.rect(15, yPos - 3, 3, 3, 'F');
-                doc.setFont("helvetica", "bold");
-                doc.text(label, 22, yPos);
-            } else {
-                doc.setDrawColor(180, 180, 180);
-                doc.rect(15, yPos - 3, 3, 3, 'S');
-                doc.setFont("helvetica", "normal");
-                doc.text(label, 22, yPos);
-            }
-            yPos += 7;
-        });
-
-        yPos += 5;
-        doc.setFillColor(250, 250, 250);
-        doc.roundedRect(15, yPos, 180, 45, 2, 2, 'F');
-        doc.setDrawColor(220, 220, 220);
-        doc.roundedRect(15, yPos, 180, 45, 2, 2, 'S');
+        // Cabeçalho azul
+        doc.setFillColor(26, 73, 144); doc.rect(0, 0, 210, 45, 'F');
+        doc.setTextColor(255, 255, 255); doc.setFontSize(22); doc.setFont(undefined, 'bold');
+        doc.text("EEMTI DRAGÃO DO MAR", 105, 20, { align: "center" });
+        doc.setFontSize(12); doc.setFont(undefined, 'normal');
+        doc.text("SISTEMA DIGITAL DE GESTÃO DISCIPLINAR", 105, 30, { align: "center" });
         
-        doc.setFont("helvetica", "bold");
-        doc.text("RELATO ADICIONAL E PROVIDÊNCIAS:", 20, yPos + 7);
-        doc.setFont("helvetica", "normal");
-        const textoObs = doc.splitTextToSize(obsAdicional || "Nenhuma observação extra relatada.", 170);
-        doc.text(textoObs, 20, yPos + 15);
+        // Título do Relatório
+        doc.setTextColor(40, 40, 40); doc.setFontSize(16); doc.setFont(undefined, 'bold');
+        doc.text("RELATÓRIO DE OCORRÊNCIA", 105, 60, { align: "center" });
         
-        doc.setFont("helvetica", "bold");
-        doc.text(`Houve agressão física/verbal? ${agr}`, 20, yPos + 34);
-        doc.text(`Sanção aplicada: ${pen || "A definir pela gestão"}`, 20, yPos + 40);
+        // Dados do Aluno em um Box
+        doc.setDrawColor(200); doc.rect(15, 70, 180, 45);
+        doc.setFontSize(11); doc.setTextColor(80);
+        doc.text(`ALUNO(A):`, 20, 78); doc.setFont(undefined, 'bold'); doc.setTextColor(0); doc.text(aluno, 50, 78);
+        doc.setFont(undefined, 'normal'); doc.setTextColor(80);
+        doc.text(`TURMA:`, 20, 88); doc.setFont(undefined, 'bold'); doc.setTextColor(0); doc.text(turma, 50, 88);
+        doc.setFont(undefined, 'normal'); doc.setTextColor(80);
+        doc.text(`DATA/HORA:`, 20, 98); doc.setFont(undefined, 'bold'); doc.setTextColor(0); doc.text(`${dataF} às ${horaF}`, 50, 98);
+        doc.setFont(undefined, 'normal'); doc.setTextColor(80);
+        doc.text(`EMISSOR:`, 20, 108); doc.setFont(undefined, 'bold'); doc.setTextColor(0); doc.text(professorLogado, 50, 108);
 
-        doc.setFontSize(8);
-        doc.setTextColor(150, 150, 150);
-        doc.text("Documento gerado eletronicamente pela Coordenação da EEMTI DRAGÃO DO MAR.", 105, 285, { align: "center" });
+        // Listagem de Indisciplinas
+        let y = 130;
+        doc.setFontSize(13); doc.setFont(undefined, 'bold'); doc.setTextColor(26, 73, 144);
+        doc.text("INFRAÇÕES REGISTRADAS:", 15, y);
+        y += 8;
+        doc.setFontSize(10); doc.setFont(undefined, 'normal'); doc.setTextColor(0);
+        selecionados.forEach(item => { doc.text(`[X] ${item}`, 20, y); y += 7; });
+
+        // Descrição e Sanções
+        y += 5;
+        doc.setFontSize(13); doc.setFont(undefined, 'bold'); doc.setTextColor(26, 73, 144);
+        doc.text("DETALHAMENTO E MEDIDAS:", 15, y);
+        y += 8;
+        doc.setFontSize(11); doc.setFont(undefined, 'normal'); doc.setTextColor(0);
+        const splitObs = doc.splitTextToSize(`Observações: ${obs || "Sem observações adicionais."}`, 170);
+        doc.text(splitObs, 20, y);
+        y += (splitObs.length * 6) + 5;
+        doc.text(`Houve agressão? ${agr}`, 20, y);
+        y += 8;
+        doc.setFont(undefined, 'bold'); doc.text(`SANÇÃO APLICADA: ${pen || "A definir"}`, 20, y);
+
+        // Rodapé
+        doc.setFontSize(9); doc.setTextColor(150);
+        doc.text("Documento oficial gerado via sistema de ocorrências - 2026", 105, 285, { align: "center" });
 
         const pdfBase64 = doc.output('datauristring').split(',')[1];
-        const nomeDoArquivo = `${turma} - ${aluno} (${dataFormatada.replace(/\//g, '-')}).pdf`;
+        const nomeArq = `Ocorrencia_${turma}_${aluno.split(' ')[0]}.pdf`;
 
         try {
-            const response = await fetch(GOOGLE_SCRIPT_URL, {
-                method: "POST",
-                body: JSON.stringify({ nomeArquivo: nomeDoArquivo, base64: pdfBase64 })
-            });
-            const result = await response.json();
-            let linkDrive = result.status === "sucesso" ? result.url : "";
+            // Upload Drive
+            const respG = await fetch(GOOGLE_SCRIPT_URL, { method: "POST", body: JSON.stringify({ "base64": pdfBase64, "nomeArquivo": nomeArq }) });
+            const resG = await respG.json();
+            const linkDrive = resG.status === "sucesso" ? resG.url : "";
 
-            // --- CORPO DA MENSAGEM WHATSAPP (ESTILO ORIGINAL RESTAURADO) ---
+            // Salva Supabase
+            await _supabase.from('ocorrencias').insert([{
+                aluno, turma, tipos_selecionados: selecionados.join(', '), 
+                observacoes: obs, agressao: agr, penalidades: pen, 
+                professor: professorLogado, data_hora: `${dataF} às ${horaF}`,
+                url_pdf: linkDrive
+            }]);
+
+            // --- MENSAGEM WHATSAPP (COMPLETA COM SAUDAÇÃO) ---
             const saudacao = `*📎 RELATÓRIO DE OCORRÊNCIA DIGITAL*%0A%0A📌 Olá, informamos que um registro de indisciplina foi gerado para o(a) aluno(a) *${aluno}* na escola *EEMTI DRAGÃO DO MAR*.%0A%0A`;
-            const detalhes = `*➡️ DETALHES:*%0A*🎓 Aluno:* ${aluno}%0A*📆 Data:* ${dataFormatada} às ${horaFormatada}%0A*⚠️ Ocorrência(s):* ${selecionadosTextos.join(', ')}%0A*👤 Registrado por:* ${professorLogado}%0A%0A_O arquivo PDF detalhado foi arquivado com sucesso na nuvem digital._`;
+            const detalhes = `*➡️ DETALHES:*%0A*🎓 Aluno:* ${aluno}%0A*📆 Data:* ${dataF} às ${horaF}%0A*⚠️ Ocorrência(s):* ${selecionados.join(', ')}%0A*🥊 Agressão:* ${agr}%0A*⚖️ Medida:* ${pen || 'A informar'}%0A*👤 Registrado por:* ${professorLogado}%0A%0A_O arquivo PDF detalhado foi arquivado com sucesso na nuvem digital._`;
             const linkTexto = linkDrive ? `%0A%0A*📄 ACESSE O DOCUMENTO OFICIAL AQUI:*%0A${linkDrive}` : "";
             
-            doc.save(nomeDoArquivo);
             window.open(`https://api.whatsapp.com/send?phone=55${fone}&text=${saudacao}${detalhes}${linkTexto}`, '_blank');
-        } catch (e) {
-            alert("Erro ao salvar no Drive, mas o PDF foi baixado.");
-        } finally {
-            btn.innerText = "SALVAR E ENVIAR WHATSAPP";
-            btn.disabled = false;
-        }
+            
+            doc.save(nomeArq);
+            alert("✅ Tudo pronto! Registro salvo e documento enviado.");
+            novaOcorrencia();
+        } catch (e) { alert("Erro durante o processo."); }
+        finally { btn.innerText = "SALVAR E ENVIAR TUDO"; btn.disabled = false; }
     }
 </script>
 </body>
