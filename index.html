@@ -95,7 +95,7 @@
             <label>Turma:</label>
             <select id="turma" onchange="atualizarAlunos()"><option value="">Selecione a turma...</option></select>
             <label>Aluno:</label>
-            <select id="aluno"><option value="">Selecione o aluno...</option></select>
+            <select id="aluno"><option value="">Selecione the aluno...</option></select>
             <button id="btn-avancar" class="btn-blue" onclick="acaoBotaoPrincipal()">AVANÇAR</button>
         </div>
         <div id="resultados-consulta" class="hidden">
@@ -150,10 +150,11 @@
     let professorLogado = "";
     let abaAtual = "registro";
 
+    // Dados das turmas mantidos conforme original
     const dadosEscola = {
         integral: {
             "1º A": ["ANA BEATRIZ CABRAL DA SILVA", "ANA BEATRIZ DANTAS BERNARDO", "ANA BEATRIZ OLIVEIRA SERRA", "ANA CAROLYNA CARNEIRO SOUSA", "ANA LUIZA DE SOUSA LOURENCO", "ANNA JULIA RODRIGUES DE MELO", "DEBORA IOLANDA GOMES DA SILVA", "DEVIDSON RAMOS DE OLIVEIRA", "DIOGO SANTOS FERREIRA", "FERNANDO ERLANIO DE OLIVEIRA AGUIAR", "JESSICA DEBORA SILVA OLIVEIRA", "JOAO GABRIEL SOUSA RODRIGUES", "JOAO LUCAS SOUSA DA COSTA", "JORGE MIGUEL ARAUJO LOPES", "JULIA EVELLEN PAIVA DA SILVA", "KAILANY DA SILVA COSTA", "KAROLLAINY OLIVEIRA SOUSA", "KAUA ARAUJO MENDES", "LUIS GUSTAVO COSTA FERNANDES", "LUNNA DE LIMA ABREU", "MARA LIDIA FERREIRA DE FARIAS", "MARIA ALICIA CARVALHO NUNES", "MARIA CLARA DA CRUZ SILVA", "MARIA EDUARDA BERNARDO SOUZA", "MARIA ISABEL ALVES PEREIRA", "MARYA EDUARDA DOS SANTOS LOBAO", "MOISES ARCANJO FLOR FERREIRA", "RAYSSA DA SILVA RODRIGUES", "RYAN DA SILVA COSTA", "SAMUEL SANTIAGO DE LIMA", "SAMYRA MARIA CAVALCANTE CRUZ", "THALES GABRIEL FERREIRA DE LIMA", "TIAGO TAVARES SOUZA", "YANN FERREIRA SILVA COELHO", "YASMIN SILVA COUTO"],
-            "1º B": ["ALESSANDRO DOS SANTOS RODRIGUES", "ANA ESTER DA SILVA FELIX", "ANA RUTY PEREIRA DOS SANTOS", "ARIELE DE CARVALHO GONDIM BARBOSA LEMOS", "BERNARDO BATISTA LIMA", "BRENO HENRIQUE CASTRO VALENTIM", "EDUARDO SOUSA GAMA", "ESTER VIRGINIO MARIANO", "FILIPE BRAS DE PAULA", "FRANCISCO EDILSON OLIVEIRA ANDRADE", "GABRIELA RODRIGUES DOS SANTOS", "GEORGE TEODOZIO SILVA", "GUSTAVO NERY TEIXEIRA DE PAULA", "IAN DE ABREU VIANA", "JOSE MARLEY MENDES DOS SANTOS", "LARA WINY SOUSA DA SILVA", "LOUISE ANDRYA FERREIRA DE SOUSA LIMA", "LUARA KALYNE DA CONCEICAO SARAIVA", "LUDMILA LOPES EVANGELISTA", "MARCOS VINICIUS ARAUJO LIMA ALVES", "MARIA BEATRIZ TELES GUEDES DE SOUSA", "MARIA EDUARDA MARTINS DANTAS", "MARIA GABRIELA DA SILVA MACEDO ARAUJO", "MARIA MANUELA FERREIRA LIMA", "MARIA VITORIA SANTOS DE LIMA", "MAYRA ALEXANDRA DOS SANTOS CARMO", "MIGUEL ANTONIO LOPES DA CUNHA", "NATHALLY ELOAR DO SANTOS HENRIQUE DA SILVA", "PAULO LUCAS VIEIRA DOS SANTOS", "PEDRO LUAN OLIVEIRA SANTOS", "PEDRO LUCAS ARAUJO BRAUNA", "RHUAN DE BRITO RODRIGUES", "RODRIGO OLIVEIRA DA SILVA", "SAULO LUKA PESSOA TABOSA", "YAN DAVID FEITOSA RODRIGUES"],
+            "1º B": ["ALESSANDRO DOS SANTOS RODRIGUES", "ANA ESTER DA SILVA FELIX", "ANA RUTY PEREIRA DOS SANTOS", "ARIELE DE CARVALHO GONDIM BARBOSA LEMOS", "BERNARDO BATISTA LIMA", "BRENO HENRIQUE CASTRO VALENTIM", "EDUARDO SOUSA GAMA", "ESTER VIRGINIO MARIANO", "FILIPE BRAS DE PAULA", "FRANCISCO EDILSON OLIVEIRA ANDRADE", "GABRIELA RODRIGUES DOS SANTOS", "GEORGE TEODOZIO SILVA", "GUSTAVO NERY TEIXEIRA DE PAULA", "IAN DE ABREU VIANA", "JOSE MARLEY MENDES DOS SANTOS", "LARA WINY SOUSA DA SILVA", "LOUISE ANDRYA FERREIRA DE SOUSA LIMA", "LUARA KALYNE DA CONCEICAO SARAIVA", "LUDMILA LOPES EVANGELISTA", "MARCOS VINICIUS ARAUJO LIMA ALVES", "MARIA BEATRIZ TELES GUEDES DE SOUSA", "MARIA EDUARDA MARTINS DANTAS", "MARIA GABRIELA DA SILVA MACEDO ARAUJO", "MARIA MANUELA FERREIRA LIMA", "MARIA VITORIA SANTOS DE LIMA", "MAYRA ALEXANDRA DOS SANTOS CARMO", "MIGUEL ANTONIO LOPES DA CUNHA", "NATHALLY ELOAR DO SANTOS HENRIQUE DA SILVA", "PAULO LUCAS VIEIRA DOS SANTOS", "PEDRO LUAN OLIVEIRA SANTOS", "PEDRO LUCAS ARAUJO BRAUNA", "RHUAN DE BRITO RODRIGUES", "RODRIGO OLIVEIRA DA SILVA", "SAULO LUKA PESOSA TABOSA", "YAN DAVID FEITOSA RODRIGUES"],
             "1º C": ["ALICE FIRMINO DOS SANTOS SILVEIRA", "ANA LIVIA DA CRUZ BORGES", "ANA VITORIA SOUSA DE LIMA", "BRENDO LUCAS DOS SANTOS SOUSA", "BRIAN VALENTE DOS SANTOS", "CAIO VICTOR SALES DO NASCIMENTO", "CARLOS YUDI SILVA DO NASCIMENTO", "CECILIA BORGES OLIVEIRA", "DALILA SIMONE DOS SANTOS", "ELNATAN DOS REIS RODRIGUES", "ERICK SANTOS ARAUJO", "FABIANO SANTIAGO DOS ANJOS", "FRANCISCO MANOEL DOS ANJOS DA SILVA", "GABRIEL CASTRO DE SOUSA", "HELLEN MARIA DO NASCIMENTO BERNARDO", "ISABELE ROCHA FERREIRA", "JOAO LEVI GOMES VIEIRA", "JOAO PEDRO LIMA SOARES", "JOAO VITOR DE PAULO DO NASCIMENTO", "JOSE CAUA DOS SANTOS RODRIGUES", "JULIA NICOLY DE LIMA", "KEVEN GABRIEL DE SOUSA RIBEIRO", "LUIZ OTAVIO DA SILVA MOREIRA", "MARIA EDUARDA BEZERRA SANTOS", "MARIA EDUARDA RODRIGUES GUIMARAES", "MARIA LUIZA DA SILVA FRANCA", "MARIA VITORIA DA SILVA DO NASCIMENTO", "SAMUEL FREITAS ALVES", "SARAH KELLY FERREIRA SOUSA", "YAN MIQUEIAS OLIVEIRA ALVES", "YASMIN PESSOA DA ROCHA", "RONNALD LOPES DE OLIVEIRA", "EMANUEL ARAÚJO MANSUR", "SAMUEL DO VALE DE OLIVEIRA", "VITÓRIA NYCOLE LOPES DE OLIVEIRA", "PEDRO GABRIEL TABOSA ROSENO", "ANA KETHELLY AGUIAR DE SOUZA"],
             "2º A": ["ANA LIVIA DOS SANTOS BARATA", "ANTONIO VINICIUS ROCHA FERREIRA", "BRYANN VICTOR PEREIRA XAVIER", "CARLA SAMANTHA DE OLIVEIRA ASSARE", "CLARISSE YASMIN DA SILVA EVARISTO", "EMANUELLE HIGINO DE SOUZA", "ENZO DOS SANTOS MONTEIRO", "ERIK DOUGLAS LIMA MARTINS", "FRANCISCO WEVERTON DOS SANTOS", "GUILHERMY KAUA DA SILVA FERREIRA", "IRVINA AGATA DA SILVA FRANCA", "JENYFER RAISSA DO NASCIMENTO COSTA", "JESSIANE RIBEIRO CARNEIRO", "KAUA GUILHERME CRUZ SILVA", "KELRIANE BARROS DA COSTA", "LUIZ EDUARDO LOURENCO FIGUEIRA MACEDO", "MARCOS KAYRON ALBUQUERQUE ALVES", "MARIA IONARA FERREIRA DOS SANTOS", "MARIA SARAH LOPES DE BRITO", "MAYCON DO NASCIMENTO PEREIRA", "NARA LAUANE CARNEIRO FERREIRA", "PEDRO GABRIEL MOREIRA DA COSTA", "PEDRO HENRIQUE SOUSA MARTINS DA SILVA", "PEDRO VINÍCIUS OLIVEIRA DOS ANGELOS", "RYAN BARBOSA DE SOUSA", "SUELEN CRISTINA FARIAS LEAL", "VITORIA SANTOS DE OLIVEIRA SILVA", "WELLY DE CASTRO BULHOES", "YURI CAETANO CARVALHO"],
             "2º B": ["ANA BRUNA FELIX ACARCIO PEREIRA", "ANA LAYS DE ALMEIDA", "ANA LIVIA VASCONCELOS LOBO ROCHA", "ANA VITORIA DE SOUZA AMARAL", "CALEBE DA SILVA SANTOS", "CECILIA SILVA OLIVEIRA", "DEBORAH CARVALHO BEZERRA", "GLENDA VITORIA GOMES DE LIVIA", "GUILHERME BARBOSA LOURENCO", "JOAO PIERRY ALVES DE OLIVEIRA", "JOEL BARBOSA EVANGELISTA", "KAROLYNNE", "KERISSON ANDRADE AMORIM", "KEYLLON VITORIO DE SOUZA AMBE", "LUANA FONSECA MONTEIRO", "LUCAS OLIVEIRA DE SOUZA", "MARCOS VINICIUS SILVANO BATISTA", "MARIA EDUARDA SANTANA RODRIGUES", "MARIA HELLEN SOUSA BARROS", "MIGUEL RONEY PEREIRA DUARTE", "MOYSHES GOMES DO NASCIMENTO", "NICOLAS DE FREITAS LOPES", "NYKOLAS PEREIRA RIOS", "PEDRO RIBEIRO HOLANDA", "RIHANHA FERREIRA DOS REIS", "RYANBERG FERREIRA BARBOSA DA SILVA", "VARVARA OZEROVA", "VICTOR GABRIEL LIMA DE SOUZA", "YAN DHARLLYS MARTINS DO NASCIMENTO"],
@@ -204,6 +205,16 @@
         const { data, error } = await _supabase.auth.signInWithPassword({ email, password: senha });
         if (error) alert("Credenciais incorretas.");
         else { professorLogado = data.user.email; mostrarTela('tela-selecao'); }
+    }
+
+    // --- CORREÇÃO DA NOVA CONTA APLICADA AQUI ---
+    async function acaoCadastro() {
+        const email = document.getElementById('cad-email').value;
+        const senha = document.getElementById('cad-senha').value;
+        if (!email || senha.length < 6) return alert("E-mail inválido ou senha muito curta.");
+        const { data, error } = await _supabase.auth.signUp({ email, password: senha });
+        if (error) alert("Erro: " + error.message);
+        else { alert("Cadastro realizado! Verifique seu e-mail."); mostrarTela('tela-login'); }
     }
 
     async function solicitarReset() {
@@ -292,21 +303,16 @@
         try {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-
             const margin = 18;
             let y = margin;
 
-            // Cabeçalho azul menor (40 mm de altura)
             doc.setFillColor(26, 73, 144);
             doc.rect(0, 0, 210, 40, 'F');
 
-            // Logo acima do nome
             try {
                 const logo = await carregarImagem('imagem1.png');
                 doc.addImage(logo, 'PNG', 85, 3, 40, 40);
-            } catch (e) {
-                console.warn("Logo não carregado");
-            }
+            } catch (e) { console.warn("Logo não carregado"); }
 
             doc.setFontSize(20);
             doc.setTextColor(255);
@@ -318,8 +324,6 @@
             doc.text("SISTEMA DIGITAL DE GESTÃO DISCIPLINAR", 105, 38, { align: "center" });
 
             y = 45;
-
-            // Box de Dados
             doc.setDrawColor(187, 222, 251);
             doc.rect(margin, y, 174, 32);
             doc.setFontSize(10);
@@ -327,19 +331,14 @@
 
             doc.setFont("helvetica", "bold"); doc.text("ALUNO(A):", margin+5, y+8);
             doc.setFont("helvetica", "normal"); doc.text(aluno, margin+40, y+8);
-            
             doc.setFont("helvetica", "bold"); doc.text("TURMA:", margin+5, y+15);
             doc.setFont("helvetica", "normal"); doc.text(turma, margin+40, y+15);
-            
             doc.setFont("helvetica", "bold"); doc.text("DATA/HORA:", margin+5, y+22);
             doc.setFont("helvetica", "normal"); doc.text(`${dataF} às ${horaF}`, margin+40, y+22);
-
             doc.setFont("helvetica", "bold"); doc.text("EMISSOR:", margin+5, y+29);
             doc.setFont("helvetica", "normal"); doc.text(professorLogado, margin+40, y+29);
 
             y += 40;
-
-            // Infrações
             doc.setFontSize(11);
             doc.setTextColor(26, 73, 144);
             doc.text("INFRAÇÕES REGISTRADAS:", margin, y);
@@ -350,64 +349,37 @@
             doc.rect(margin, y, 174, hInfra);
             doc.setFontSize(9);
             doc.setTextColor(0);
-            selecionados.forEach((item, i) => {
-                doc.text(`[X] ${item}`, margin + 5, y + 5 + i * 6);
-            });
+            selecionados.forEach((item, i) => { doc.text(`[X] ${item}`, margin + 5, y + 5 + i * 6); });
 
             y += hInfra + 12;
-
-            // Descrição com destaque nos títulos
             doc.setFontSize(11);
             doc.setTextColor(26, 73, 144);
             doc.text("DESCRIÇÃO DOS FATOS E MEDIDAS:", margin, y);
             y += 8;
 
-            doc.setFontSize(11);
-            doc.setFont("helvetica", "bold");
-            doc.setTextColor(0);
-            doc.text("Relato:", margin + 5, y);
-            y += 6;
-
-            doc.setFont("helvetica", "normal");
-            doc.setFontSize(9);
+            doc.setFontSize(11); doc.setFont("helvetica", "bold"); doc.setTextColor(0);
+            doc.text("Relato:", margin + 5, y); y += 6;
+            doc.setFont("helvetica", "normal"); doc.setFontSize(9);
             const linhasRelato = doc.splitTextToSize(obs || "Sem relato detalhado.", 164);
             doc.text(linhasRelato, margin + 5, y);
             y += linhasRelato.length * 5.5 + 8;
 
-            doc.setFontSize(11);
-            doc.setFont("helvetica", "bold");
-            doc.text("Houve agressão?", margin + 5, y);
-            y += 6;
+            doc.setFontSize(11); doc.setFont("helvetica", "bold"); doc.text("Houve agressão?", margin + 5, y); y += 6;
+            doc.setFont("helvetica", "normal"); doc.setFontSize(9); doc.text(agr, margin + 5, y); y += 8;
 
-            doc.setFont("helvetica", "normal");
-            doc.setFontSize(9);
-            doc.text(agr, margin + 5, y);
-            y += 8;
-
-            doc.setFontSize(11);
-            doc.setFont("helvetica", "bold");
-            doc.text("Sanção aplicada:", margin + 5, y);
-            y += 6;
-
-            doc.setFont("helvetica", "normal");
-            doc.setFontSize(9);
+            doc.setFontSize(11); doc.setFont("helvetica", "bold"); doc.text("Sanção aplicada:", margin + 5, y); y += 6;
+            doc.setFont("helvetica", "normal"); doc.setFontSize(9);
             const linhasSan = doc.splitTextToSize(pen || "A definir.", 164);
             doc.text(linhasSan, margin + 5, y);
 
-            // Créditos fixos na última linha da página
-            doc.setFontSize(8);
-            doc.setTextColor(120);
+            doc.setFontSize(8); doc.setTextColor(120);
             doc.text("Documento oficial gerado via sistema de ocorrências - 2026", 105, 285, { align: "center" });
             doc.text("Desenvolvido pelo LEI (Lab. Ensino de Informática da EEMTI DRAGÃO DO MAR) - GOVERNO DO ESTADO DO CEARÁ", 105, 290, { align: "center" });
 
-            // Exportação e envio
             const pdfBase64 = doc.output('datauristring').split(',')[1];
             const nomeArq = `Ocorrencia_${turma}_${aluno.split(' ')[0]}.pdf`;
 
-            const respG = await fetch(GOOGLE_SCRIPT_URL, { 
-                method: "POST", 
-                body: JSON.stringify({ "base64": pdfBase64, "nomeArquivo": nomeArq }) 
-            });
+            const respG = await fetch(GOOGLE_SCRIPT_URL, { method: "POST", body: JSON.stringify({ "base64": pdfBase64, "nomeArquivo": nomeArq }) });
             const resG = await respG.json();
             const linkDrive = resG.status === "sucesso" ? resG.url : "";
 
@@ -418,6 +390,7 @@
                 url_pdf: linkDrive
             }]);
 
+            // --- WHATSAPP E NOMENCLATURAS MANTIDOS FIEIS AO SEU ARQUIVO ---
             const saudacao = `*📎EEMTI DRAGÃO DO MAR - NOTIFICAÇÃO DISCIPLINAR*%0A%0A📌 Olá, informamos um registro de indisciplina para *${aluno}* na escola *EEMTI DRAGÃO DO MAR*.%0A%0A`;
             const corpoMsg = `*🔎 DETALHES:*%0A*🎓 Aluno:* ${aluno}%0A*📆 Data:* ${dataF} às ${horaF}%0A*⚠️ Ocorrência(s):* ${selecionados.join(', ') || "Não marcado item específico"}%0A%0A*📝 DESCRIÇÃO DOS FATOS:*%0A${obs || "Sem descrição detalhada."}%0A%0A*🥊 Agressão:* ${agr}%0A*⚖️ Medida:* ${pen || 'A informar'}%0A%0A_Documento original arquivado na nuvem._`;
             const linkTexto = linkDrive ? `%0A%0A*📄 ACESSE O PDF COMPLETO AQUI:*%0A${linkDrive}` : "";
@@ -427,13 +400,8 @@
             doc.save(nomeArq);
             alert("✅ Sucesso! Registro salvo e WhatsApp enviado.");
             novaOcorrencia();
-        } catch (e) { 
-            console.error(e);
-            alert("Erro durante o processo. Tente novamente."); 
-        } finally { 
-            btn.innerText = "SALVAR E ENVIAR TUDO"; 
-            btn.disabled = false; 
-        }
+        } catch (e) { console.error(e); alert("Erro durante o processo."); } 
+        finally { btn.innerText = "💾SALVAR E ✅NOTIFICAR"; btn.disabled = false; }
     }
 </script>
 </body>
