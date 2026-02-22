@@ -38,11 +38,11 @@
             margin-top: 15px; 
             text-align: left; 
             font-size: 0.85rem; 
-            word-break: break-all;           /* quebra forçada de palavras longas */
-            overflow-wrap: break-word;       /* quebra natural */
-            hyphens: auto;                   /* hifenização automática */
-            max-height: 250px;               /* limite de altura com rolagem */
-            overflow-y: auto;                /* rolagem vertical se ultrapassar */
+            word-break: break-all; 
+            overflow-wrap: break-word; 
+            hyphens: auto; 
+            max-height: 250px; 
+            overflow-y: auto; 
             box-sizing: border-box;
         }
         .btn-pdf-link { display: block; margin-top: 10px; padding: 10px; background: #1a73e8; color: white; text-decoration: none; border-radius: 8px; text-align: center; font-weight: bold; }
@@ -294,15 +294,16 @@
             const doc = new jsPDF();
 
             const margin = 18;
-            let y = margin + 5;
+            let y = margin;
 
-            // Cabeçalho azul escuro com logo
+            // Cabeçalho azul menor (40 mm de altura)
             doc.setFillColor(26, 73, 144);
-            doc.rect(0, 0, 210, 45, 'F');
+            doc.rect(0, 0, 210, 40, 'F');
 
+            // Logo acima do nome
             try {
                 const logo = await carregarImagem('imagem1.png');
-                doc.addImage(logo, 'PNG', 85, 5, 40, 40);
+                doc.addImage(logo, 'PNG', 85, 3, 40, 40);
             } catch (e) {
                 console.warn("Logo não carregado");
             }
@@ -310,15 +311,15 @@
             doc.setFontSize(20);
             doc.setTextColor(255);
             doc.setFont("helvetica", "bold");
-            doc.text("EEMTI DRAGÃO DO MAR", 105, 28, { align: "center" });
+            doc.text("EEMTI DRAGÃO DO MAR", 105, 35, { align: "center" });
 
-            doc.setFontSize(11);
+            doc.setFontSize(10);
             doc.setTextColor(220, 230, 255);
             doc.text("SISTEMA DIGITAL DE GESTÃO DISCIPLINAR", 105, 38, { align: "center" });
 
-            y = 50;
+            y = 45;
 
-            // Dados do aluno
+            // Box de Dados
             doc.setDrawColor(187, 222, 251);
             doc.rect(margin, y, 174, 32);
             doc.setFontSize(10);
@@ -338,7 +339,7 @@
 
             y += 40;
 
-            // Infrações (fonte menor)
+            // Infrações
             doc.setFontSize(11);
             doc.setTextColor(26, 73, 144);
             doc.text("INFRAÇÕES REGISTRADAS:", margin, y);
@@ -353,33 +354,53 @@
                 doc.text(`[X] ${item}`, margin + 5, y + 5 + i * 6);
             });
 
-            y += hInfra + 10;
+            y += hInfra + 12;
 
-            // Descrição
+            // Descrição com destaque nos títulos
             doc.setFontSize(11);
             doc.setTextColor(26, 73, 144);
             doc.text("DESCRIÇÃO DOS FATOS E MEDIDAS:", margin, y);
-            y += 7;
+            y += 8;
 
-            let texto = `Relato: ${obs || "Sem descrição detalhada."}\n\n` +
-                        `Houve agressão? ${agr}\n` +
-                        `Sanção aplicada: ${pen || "A definir"}`;
-
-            doc.setFontSize(9);
+            doc.setFontSize(11);
+            doc.setFont("helvetica", "bold");
             doc.setTextColor(0);
-            const linhas = doc.splitTextToSize(texto, 170);
-            const hTexto = linhas.length * 5.5 + 8;
-            doc.rect(margin, y, 174, hTexto);
-            doc.text(linhas, margin + 5, y + 6);
+            doc.text("Relato:", margin + 5, y);
+            y += 6;
 
-            y += hTexto + 15;
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(9);
+            const linhasRelato = doc.splitTextToSize(obs || "Sem relato detalhado.", 164);
+            doc.text(linhasRelato, margin + 5, y);
+            y += linhasRelato.length * 5.5 + 8;
 
-            // Créditos na última linha
+            doc.setFontSize(11);
+            doc.setFont("helvetica", "bold");
+            doc.text("Houve agressão?", margin + 5, y);
+            y += 6;
+
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(9);
+            doc.text(agr, margin + 5, y);
+            y += 8;
+
+            doc.setFontSize(11);
+            doc.setFont("helvetica", "bold");
+            doc.text("Sanção aplicada:", margin + 5, y);
+            y += 6;
+
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(9);
+            const linhasSan = doc.splitTextToSize(pen || "A definir.", 164);
+            doc.text(linhasSan, margin + 5, y);
+
+            // Créditos fixos na última linha da página
             doc.setFontSize(8);
             doc.setTextColor(120);
             doc.text("Documento oficial gerado via sistema de ocorrências - 2026", 105, 285, { align: "center" });
             doc.text("Desenvolvido pelo LEI (Lab. Ensino de Informática da EEMTI DRAGÃO DO MAR) - GOVERNO DO ESTADO DO CEARÁ", 105, 290, { align: "center" });
 
+            // Exportação e envio
             const pdfBase64 = doc.output('datauristring').split(',')[1];
             const nomeArq = `Ocorrencia_${turma}_${aluno.split(' ')[0]}.pdf`;
 
