@@ -281,7 +281,7 @@
         
         // Título do Relatório
         doc.setTextColor(40, 40, 40); doc.setFontSize(16); doc.setFont(undefined, 'bold');
-        doc.text("RELATÓRIO DE OCORRÊNCIA", 105, 60, { align: "center" });
+        doc.text("RELATÓRIO DE OCORRÊNCIA DISCIPLINAR ", 105, 60, { align: "center" });
         
         // Dados do Aluno em um Box
         doc.setDrawColor(200); doc.rect(15, 70, 180, 45);
@@ -292,7 +292,7 @@
         doc.setFont(undefined, 'normal'); doc.setTextColor(80);
         doc.text(`DATA/HORA:`, 20, 98); doc.setFont(undefined, 'bold'); doc.setTextColor(0); doc.text(`${dataF} às ${horaF}`, 50, 98);
         doc.setFont(undefined, 'normal'); doc.setTextColor(80);
-        doc.text(`EMISSOR:`, 20, 108); doc.setFont(undefined, 'bold'); doc.setTextColor(0); doc.text(professorLogado, 50, 108);
+        doc.text(`REGISTRADO POR:`, 20, 108); doc.setFont(undefined, 'bold'); doc.setTextColor(0); doc.text(professorLogado, 50, 108);
 
         // Listagem de Indisciplinas
         let y = 130;
