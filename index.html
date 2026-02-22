@@ -292,7 +292,7 @@
         doc.setFont(undefined, 'normal'); doc.setTextColor(80);
         doc.text(`DATA/HORA:`, 20, 98); doc.setFont(undefined, 'bold'); doc.setTextColor(0); doc.text(`${dataF} às ${horaF}`, 50, 98);
         doc.setFont(undefined, 'normal'); doc.setTextColor(80);
-        doc.text(`REGISTR0:`, 20, 108); doc.setFont(undefined, 'bold'); doc.setTextColor(0); doc.text(professorLogado, 50, 108);
+        doc.text(`REGISTRO:`, 20, 108); doc.setFont(undefined, 'bold'); doc.setTextColor(0); doc.text(professorLogado, 50, 108);
 
         // Listagem de Indisciplinas
         let y = 130;
@@ -313,7 +313,7 @@
         y += (splitObs.length * 6) + 5;
         doc.text(`Houve agressão? ${agr}`, 20, y);
         y += 8;
-        doc.setFont(undefined, 'bold'); doc.text(`SANÇÃO APLICADA: ${pen || "A definir"}`, 20, y);
+        doc.setFont(undefined, 'bold'); doc.text(`MEDIDA(S) ADOTADA(S): ${pen || "A definir"}`, 20, y);
 
         // Rodapé
         doc.setFontSize(9); doc.setTextColor(150);
