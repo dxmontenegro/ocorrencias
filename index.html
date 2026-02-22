@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EEMTI Dragão do Mar</title>
+    <title>EEMTI Dragão do Mar - Ocorrências 2026</title>
     <link rel="icon" type="image/png" href="imagem1.png">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -29,7 +29,22 @@
         .checkbox-item { display: flex; align-items: center; margin-bottom: 8px; cursor: pointer; font-size: 0.9rem; }
         .checkbox-item input { width: auto; margin-right: 10px; transform: scale(1.1); }
         .info-aluno { background: #e7f3ff; padding: 12px; border-radius: 8px; margin-bottom: 10px; font-weight: bold; color: #1a73e8; }
-        .card-ocorrencia { background: #fff; border: 1px solid #ddd; border-left: 5px solid #1a73e8; padding: 15px; border-radius: 8px; margin-top: 15px; text-align: left; font-size: 0.85rem; }
+        .card-ocorrencia { 
+            background: #fff; 
+            border: 1px solid #ddd; 
+            border-left: 5px solid #1a73e8; 
+            padding: 15px; 
+            border-radius: 8px; 
+            margin-top: 15px; 
+            text-align: left; 
+            font-size: 0.85rem; 
+            word-break: break-all;           /* quebra forçada de palavras longas */
+            overflow-wrap: break-word;       /* quebra natural */
+            hyphens: auto;                   /* hifenização automática */
+            max-height: 250px;               /* limite de altura com rolagem */
+            overflow-y: auto;                /* rolagem vertical se ultrapassar */
+            box-sizing: border-box;
+        }
         .btn-pdf-link { display: block; margin-top: 10px; padding: 10px; background: #1a73e8; color: white; text-decoration: none; border-radius: 8px; text-align: center; font-weight: bold; }
         .hidden { display: none !important; }
         .auth-footer { margin-top: 20px; display: flex; justify-content: space-between; font-size: 0.85rem; }
@@ -43,11 +58,11 @@
         <button class="btn-sair" onclick="acaoSair()">SAIR</button>
     </div>
 
-    <img src="imagem1.png" alt="Logo" class="logo-escola">
+    <img src="imagem1.png" alt="Logo" class="logo-escola" id="img-logo-main">
 
     <div id="tela-login">
         <h2>EEMTI DRAGÃO DO MAR</h2>
-        <p style="color:#666; margin-top:-10px">Sistema de Gestão Disciplinar - Ano Letivo 2026 - L.E.I.</p>
+        <p style="color:#666; margin-top:-10px">Gestão de Ocorrências 2026</p>
         <input type="email" id="login-email" placeholder="E-mail">
         <input type="password" id="login-senha" placeholder="Senha">
         <button class="btn-blue" onclick="acaoLogin()">ENTRAR</button>
@@ -119,7 +134,7 @@
         <label>Medida Adotada / Sanção:</label>
         <input type="text" id="penalidades" placeholder="Ex: Advertência, Suspensão, Chamada do resp.">
         <label>WhatsApp do Responsável:</label>
-        <input type="number" id="whatsapp-fone" placeholder="85900000000">
+        <input type="tel" id="whatsapp-fone" placeholder="85900000000">
         
         <button class="btn-green" id="btn-finalizar" onclick="gerarEEnviar()">SALVAR E ENVIAR TUDO</button>
         <button class="btn-secondary" onclick="novaOcorrencia()">CANCELAR</button>
@@ -135,7 +150,6 @@
     let professorLogado = "";
     let abaAtual = "registro";
 
-    // --- DADOS ESCOLA (RESTAURADOS) ---
     const dadosEscola = {
         integral: {
             "1º A": ["ANA BEATRIZ CABRAL DA SILVA", "ANA BEATRIZ DANTAS BERNARDO", "ANA BEATRIZ OLIVEIRA SERRA", "ANA CAROLYNA CARNEIRO SOUSA", "ANA LUIZA DE SOUSA LOURENCO", "ANNA JULIA RODRIGUES DE MELO", "DEBORA IOLANDA GOMES DA SILVA", "DEVIDSON RAMOS DE OLIVEIRA", "DIOGO SANTOS FERREIRA", "FERNANDO ERLANIO DE OLIVEIRA AGUIAR", "JESSICA DEBORA SILVA OLIVEIRA", "JOAO GABRIEL SOUSA RODRIGUES", "JOAO LUCAS SOUSA DA COSTA", "JORGE MIGUEL ARAUJO LOPES", "JULIA EVELLEN PAIVA DA SILVA", "KAILANY DA SILVA COSTA", "KAROLLAINY OLIVEIRA SOUSA", "KAUA ARAUJO MENDES", "LUIS GUSTAVO COSTA FERNANDES", "LUNNA DE LIMA ABREU", "MARA LIDIA FERREIRA DE FARIAS", "MARIA ALICIA CARVALHO NUNES", "MARIA CLARA DA CRUZ SILVA", "MARIA EDUARDA BERNARDO SOUZA", "MARIA ISABEL ALVES PEREIRA", "MARYA EDUARDA DOS SANTOS LOBAO", "MOISES ARCANJO FLOR FERREIRA", "RAYSSA DA SILVA RODRIGUES", "RYAN DA SILVA COSTA", "SAMUEL SANTIAGO DE LIMA", "SAMYRA MARIA CAVALCANTE CRUZ", "THALES GABRIEL FERREIRA DE LIMA", "TIAGO TAVARES SOUZA", "YANN FERREIRA SILVA COELHO", "YASMIN SILVA COUTO"],
@@ -154,7 +168,6 @@
         }
     };
 
-    // --- NAVEGAÇÃO ---
     function mostrarTela(id) {
         document.querySelectorAll('.container > div').forEach(div => { if(div.id) div.classList.add('hidden'); });
         if(['tela-selecao','tela-formulario'].includes(id)) document.getElementById('header-logado').classList.remove('hidden');
@@ -185,7 +198,6 @@
         if(mod && tur) dadosEscola[mod][tur].sort().forEach(a => sel.innerHTML += `<option value="${a}">${a}</option>`);
     }
 
-    // --- AUTENTICAÇÃO E RESET ---
     async function acaoLogin() {
         const email = document.getElementById('login-email').value;
         const senha = document.getElementById('login-senha').value;
@@ -206,7 +218,6 @@
 
     async function acaoSair() { await _supabase.auth.signOut(); window.location.reload(); }
 
-    // --- CONSULTA ---
     async function acaoBotaoPrincipal() {
         const aluno = document.getElementById('aluno').value;
         if(!aluno) return alert("Por favor, selecione um aluno.");
@@ -232,7 +243,7 @@
                 <div class="card-ocorrencia">
                     <b>📅 Data:</b> ${oc.data_hora}<br>
                     <b>⚠️ Itens:</b> ${oc.tipos_selecionados}<br>
-                    <b>⚖️ Medida(s) Adotada(s):</b> ${oc.penalidades || 'A definir'}
+                    <b>⚖️ Sanção:</b> ${oc.penalidades || 'A definir'}
                     <hr>${link}
                 </div>`;
         });
@@ -240,7 +251,6 @@
 
     function limparConsulta() { document.getElementById('form-selecao').classList.remove('hidden'); document.getElementById('resultados-consulta').classList.add('hidden'); }
 
-    // --- GERAÇÃO DE PDF E WHATSAPP ---
     function novaOcorrencia() { 
         document.getElementById('descricao').value = ""; 
         document.getElementById('penalidades').value = "";
@@ -248,87 +258,138 @@
         mostrarTela('tela-selecao'); 
     }
 
+    function carregarImagem(src) {
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => resolve(img);
+            img.onerror = reject;
+            img.src = src;
+        });
+    }
+
     async function gerarEEnviar() {
-        const aluno = document.getElementById('nome-aluno-confirmado').innerText;
+        const aluno = document.getElementById('nome-aluno-confirmado').innerText.trim();
         const turma = document.getElementById('turma').value;
-        const obs = document.getElementById('descricao').value;
+        const obs = document.getElementById('descricao').value.trim();
         const agr = document.getElementById('houve-agressao').value;
-        const pen = document.getElementById('penalidades').value;
-        const fone = document.getElementById('whatsapp-fone').value;
+        const pen = document.getElementById('penalidades').value.trim();
+        const fone = document.getElementById('whatsapp-fone').value.trim();
         
         let selecionados = [];
         document.querySelectorAll('#tipos-ocorrencia input:checked').forEach(c => selecionados.push(c.getAttribute('data-label')));
         
-        if(selecionados.length === 0 && !obs) return alert("Marque pelo menos uma indisciplina.");
-        if(!fone) return alert("Número do responsável é obrigatório.");
+        if(selecionados.length === 0 && !obs) return alert("Descreva os fatos ou marque uma indisciplina.");
+        if(!fone) return alert("Número do WhatsApp é obrigatório.");
 
         const btn = document.getElementById('btn-finalizar');
-        btn.innerText = "PROCESSANDO..."; btn.disabled = true;
+        btn.innerText = "PROCESSANDO..."; 
+        btn.disabled = true;
 
         const agora = new Date();
         const dataF = agora.toLocaleDateString('pt-BR');
         const horaF = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 
-        // --- GERAÇÃO DO PDF (DESIGN MELHORADO) ---
-        const doc = new jspdf.jsPDF();
-        
-        // Cabeçalho azul
-        doc.setFillColor(26, 73, 144); doc.rect(0, 0, 210, 45, 'F');
-        doc.setTextColor(255, 255, 255); doc.setFontSize(22); doc.setFont(undefined, 'bold');
-        doc.text("EEMTI DRAGÃO DO MAR", 105, 20, { align: "center" });
-        doc.setFontSize(12); doc.setFont(undefined, 'normal');
-        doc.text("SISTEMA DIGITAL DE GESTÃO DISCIPLINAR", 105, 30, { align: "center" });
-        
-        // Título do Relatório
-        doc.setTextColor(40, 40, 40); doc.setFontSize(16); doc.setFont(undefined, 'bold');
-        doc.text("RELATÓRIO DE OCORRÊNCIA DISCIPLINAR ", 105, 60, { align: "center" });
-        
-        // Dados do Aluno em um Box
-        doc.setDrawColor(200); doc.rect(15, 70, 180, 45);
-        doc.setFontSize(11); doc.setTextColor(80);
-        doc.text(`ALUNO(A):`, 20, 78); doc.setFont(undefined, 'bold'); doc.setTextColor(0); doc.text(aluno, 50, 78);
-        doc.setFont(undefined, 'normal'); doc.setTextColor(80);
-        doc.text(`TURMA:`, 20, 88); doc.setFont(undefined, 'bold'); doc.setTextColor(0); doc.text(turma, 50, 88);
-        doc.setFont(undefined, 'normal'); doc.setTextColor(80);
-        doc.text(`DATA/HORA:`, 20, 98); doc.setFont(undefined, 'bold'); doc.setTextColor(0); doc.text(`${dataF} às ${horaF}`, 50, 98);
-        doc.setFont(undefined, 'normal'); doc.setTextColor(80);
-        doc.text(`REGISTRO:`, 20, 108); doc.setFont(undefined, 'bold'); doc.setTextColor(0); doc.text(professorLogado, 50, 108);
-
-        // Listagem de Indisciplinas
-        let y = 130;
-        doc.setFontSize(13); doc.setFont(undefined, 'bold'); doc.setTextColor(26, 73, 144);
-        doc.text("INDISCIPLINA(S) REGISTRADA(S):", 15, y);
-        y += 8;
-        doc.setFontSize(10); doc.setFont(undefined, 'normal'); doc.setTextColor(0);
-        selecionados.forEach(item => { doc.text(`[X] ${item}`, 20, y); y += 7; });
-
-        // Descrição e Sanções
-        y += 5;
-        doc.setFontSize(13); doc.setFont(undefined, 'bold'); doc.setTextColor(26, 73, 144);
-        doc.text("DETALHAMENTO E MEDIDAS:", 15, y);
-        y += 8;
-        doc.setFontSize(11); doc.setFont(undefined, 'normal'); doc.setTextColor(0);
-        const splitObs = doc.splitTextToSize(`Observações: ${obs || "Sem observações adicionais."}`, 170);
-        doc.text(splitObs, 20, y);
-        y += (splitObs.length * 6) + 5;
-        doc.text(`Houve agressão? ${agr}`, 20, y);
-        y += 8;
-        doc.setFont(undefined, 'bold'); doc.text(`MEDIDA(S) ADOTADA(S): ${pen || "A definir"}`, 20, y);
-
-        // Rodapé
-        doc.setFontSize(9); doc.setTextColor(150);
-        doc.text("Documento oficial gerado via sistema de ocorrências - 2026", 105, 285, { align: "center" });
-
-        const pdfBase64 = doc.output('datauristring').split(',')[1];
-        const nomeArq = `Ocorrencia_${turma}_${aluno.split(' ')[0]}.pdf`;
-
         try {
-            // Upload Drive
-            const respG = await fetch(GOOGLE_SCRIPT_URL, { method: "POST", body: JSON.stringify({ "base64": pdfBase64, "nomeArquivo": nomeArq }) });
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            const margin = 18;
+            let y = margin + 5;
+
+            // Cabeçalho azul escuro com logo
+            doc.setFillColor(26, 73, 144);
+            doc.rect(0, 0, 210, 45, 'F');
+
+            try {
+                const logo = await carregarImagem('imagem1.png');
+                doc.addImage(logo, 'PNG', 85, 5, 40, 40);
+            } catch (e) {
+                console.warn("Logo não carregado");
+            }
+
+            doc.setFontSize(20);
+            doc.setTextColor(255);
+            doc.setFont("helvetica", "bold");
+            doc.text("EEMTI DRAGÃO DO MAR", 105, 28, { align: "center" });
+
+            doc.setFontSize(11);
+            doc.setTextColor(220, 230, 255);
+            doc.text("SISTEMA DIGITAL DE GESTÃO DISCIPLINAR", 105, 38, { align: "center" });
+
+            y = 50;
+
+            // Dados do aluno
+            doc.setDrawColor(187, 222, 251);
+            doc.rect(margin, y, 174, 32);
+            doc.setFontSize(10);
+            doc.setTextColor(0);
+
+            doc.setFont("helvetica", "bold"); doc.text("ALUNO(A):", margin+5, y+8);
+            doc.setFont("helvetica", "normal"); doc.text(aluno, margin+40, y+8);
+            
+            doc.setFont("helvetica", "bold"); doc.text("TURMA:", margin+5, y+15);
+            doc.setFont("helvetica", "normal"); doc.text(turma, margin+40, y+15);
+            
+            doc.setFont("helvetica", "bold"); doc.text("DATA/HORA:", margin+5, y+22);
+            doc.setFont("helvetica", "normal"); doc.text(`${dataF} às ${horaF}`, margin+40, y+22);
+
+            doc.setFont("helvetica", "bold"); doc.text("EMISSOR:", margin+5, y+29);
+            doc.setFont("helvetica", "normal"); doc.text(professorLogado, margin+40, y+29);
+
+            y += 40;
+
+            // Infrações (fonte menor)
+            doc.setFontSize(11);
+            doc.setTextColor(26, 73, 144);
+            doc.text("INFRAÇÕES REGISTRADAS:", margin, y);
+            y += 6;
+
+            doc.setDrawColor(187, 222, 251);
+            const hInfra = selecionados.length * 6 + 8;
+            doc.rect(margin, y, 174, hInfra);
+            doc.setFontSize(9);
+            doc.setTextColor(0);
+            selecionados.forEach((item, i) => {
+                doc.text(`[X] ${item}`, margin + 5, y + 5 + i * 6);
+            });
+
+            y += hInfra + 10;
+
+            // Descrição
+            doc.setFontSize(11);
+            doc.setTextColor(26, 73, 144);
+            doc.text("DESCRIÇÃO DOS FATOS E MEDIDAS:", margin, y);
+            y += 7;
+
+            let texto = `Relato: ${obs || "Sem descrição detalhada."}\n\n` +
+                        `Houve agressão? ${agr}\n` +
+                        `Sanção aplicada: ${pen || "A definir"}`;
+
+            doc.setFontSize(9);
+            doc.setTextColor(0);
+            const linhas = doc.splitTextToSize(texto, 170);
+            const hTexto = linhas.length * 5.5 + 8;
+            doc.rect(margin, y, 174, hTexto);
+            doc.text(linhas, margin + 5, y + 6);
+
+            y += hTexto + 15;
+
+            // Créditos na última linha
+            doc.setFontSize(8);
+            doc.setTextColor(120);
+            doc.text("Documento oficial gerado via sistema de ocorrências - 2026", 105, 285, { align: "center" });
+            doc.text("Desenvolvido pelo LEI (Lab. Ensino de Informática da EEMTI DRAGÃO DO MAR) - GOVERNO DO ESTADO DO CEARÁ", 105, 290, { align: "center" });
+
+            const pdfBase64 = doc.output('datauristring').split(',')[1];
+            const nomeArq = `Ocorrencia_${turma}_${aluno.split(' ')[0]}.pdf`;
+
+            const respG = await fetch(GOOGLE_SCRIPT_URL, { 
+                method: "POST", 
+                body: JSON.stringify({ "base64": pdfBase64, "nomeArquivo": nomeArq }) 
+            });
             const resG = await respG.json();
             const linkDrive = resG.status === "sucesso" ? resG.url : "";
 
-            // Salva Supabase
             await _supabase.from('ocorrencias').insert([{
                 aluno, turma, tipos_selecionados: selecionados.join(', '), 
                 observacoes: obs, agressao: agr, penalidades: pen, 
@@ -336,18 +397,22 @@
                 url_pdf: linkDrive
             }]);
 
-            // --- MENSAGEM WHATSAPP (COMPLETA COM SAUDAÇÃO) ---
-            const saudacao = `*📎 RELATÓRIO DE OCORRÊNCIA DIGITAL*%0A%0A📌 Olá, informamos que um registro de indisciplina foi gerado para o(a) aluno(a) *${aluno}* na escola *EEMTI DRAGÃO DO MAR*.%0A%0A`;
-            const detalhes = `*➡️ DETALHES:*%0A*🎓 Aluno:* ${aluno}%0A*📆 Data:* ${dataF} às ${horaF}%0A*⚠️ Ocorrência(s):* ${selecionados.join(', ')}%0A*🥊 Agressão:* ${agr}%0A*⚖️ Medida:* ${pen || 'A informar'}%0A*👤 Registrado por:* ${professorLogado}%0A%0A_O arquivo PDF detalhado foi arquivado com sucesso na nuvem digital._`;
-            const linkTexto = linkDrive ? `%0A%0A*📄 ACESSE O DOCUMENTO OFICIAL AQUI:*%0A${linkDrive}` : "";
+            const saudacao = `*📎 RELATÓRIO DE OCORRÊNCIA DIGITAL*%0A%0A📌 Olá, informamos um registro de indisciplina para *${aluno}* na escola *EEMTI DRAGÃO DO MAR*.%0A%0A`;
+            const corpoMsg = `*➡️ DETALHES:*%0A*🎓 Aluno:* ${aluno}%0A*📆 Data:* ${dataF} às ${horaF}%0A*⚠️ Ocorrência(s):* ${selecionados.join(', ') || "Não marcado item específico"}%0A%0A*📝 DESCRIÇÃO DOS FATOS:*%0A${obs || "Sem descrição detalhada."}%0A%0A*🥊 Agressão:* ${agr}%0A*⚖️ Medida:* ${pen || 'A informar'}%0A%0A_Documento original arquivado na nuvem._`;
+            const linkTexto = linkDrive ? `%0A%0A*📄 ACESSE O PDF COMPLETO AQUI:*%0A${linkDrive}` : "";
             
-            window.open(`https://api.whatsapp.com/send?phone=55${fone}&text=${saudacao}${detalhes}${linkTexto}`, '_blank');
+            window.open(`https://api.whatsapp.com/send?phone=55${fone}&text=${saudacao}${corpoMsg}${linkTexto}`, '_blank');
             
             doc.save(nomeArq);
-            alert("✅ Tudo pronto! Registro salvo e documento enviado.");
+            alert("✅ Sucesso! Registro salvo e WhatsApp enviado.");
             novaOcorrencia();
-        } catch (e) { alert("Erro durante o processo."); }
-        finally { btn.innerText = "SALVAR E ENVIAR TUDO"; btn.disabled = false; }
+        } catch (e) { 
+            console.error(e);
+            alert("Erro durante o processo. Tente novamente."); 
+        } finally { 
+            btn.innerText = "SALVAR E ENVIAR TUDO"; 
+            btn.disabled = false; 
+        }
     }
 </script>
 </body>
