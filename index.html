@@ -436,7 +436,7 @@
             }]);
 
             const saudacao = `*📎EEMTI DRAGÃO DO MAR - NOTIFICAÇÃO DISCIPLINAR*%0A%0A📌 Olá, informamos um registro de indisciplina para *${aluno}* na escola *EEMTI DRAGÃO DO MAR*.%0A%0A`;
-            const corpoMsg = `*🔎 DETALHES:*%0A*🎓 Aluno:* ${aluno}%0A*📆 Data:* ${dataF} às ${horaF}%0A*⚠️ Ocorrência(s):* ${selecionados.join(', ') || "Não marcado item específico"}%0A%0A*📝 DESCRIÇÃO DOS FATOS:*%0A${obs || "Sem descrição detalhada."}%0A%0A*🥊 Agressão:* ${agr}%0A*⚖️ Medida:* ${pen || 'A informar'}%0A%0A_Documento original arquivado na nuvem._%0A*REGISTRO:* ${professorLogado}`;
+            const corpoMsg = `*🔎 DETALHES:*%0A*🎓 Aluno:* ${aluno}%0A*📆 Data:* ${dataF} às ${horaF}%0A*⚠️ Ocorrência(s):* ${selecionados.join(', ') || "Não marcado item específico"}%0A%0A*📝 DESCRIÇÃO DOS FATOS:*%0A${obs || "Sem descrição detalhada."}%0A%0A*🥊 Agressão:* ${agr}%0A*⚖️ Medida:* ${pen || 'A informar'}%0A%0A_Documento original arquivado na nuvem._%0A*Emitido por:* ${professorLogado}`;
             const linkTexto = linkDrive ? `%0A%0A*📄 ACESSE O PDF COMPLETO AQUI:*%0A${linkDrive}` : "";
             
             window.open(`https://api.whatsapp.com/send?phone=55${fone}&text=${saudacao}${corpoMsg}${linkTexto}`, '_blank');
