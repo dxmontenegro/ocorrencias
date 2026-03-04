@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EEMTI Dragão do Mar - Ocorrências 2026</title>
+    <link rel="icon" type="image/png" href="imagem1.png">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f0f2f5; margin: 0; padding: 10px; display: flex; justify-content: center; min-height: 100vh; }
+        .container { background: white; padding: 25px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 500px; text-align: center; box-sizing: border-box; align-self: flex-start; margin-top: 20px; position: relative; }
+        .header-acoes { display: flex; justify-content: flex-end; margin-bottom: 10px; width: 100%; }
+        .btn-sair { background: #ff4d4d; color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.8rem; }
+        
+        /* Ajuste para 3 abas */
+        .nav-tabs { display: flex; margin-bottom: 20px; border-bottom: 2px solid #eee; flex-wrap: wrap; }
+        .tab-item { flex: 1; padding: 10px 5px; cursor: pointer; font-weight: bold; color: #666; transition: 0.3s; border-bottom: 3px solid transparent; font-size: 0.75rem; text-transform: uppercase; }
+        .tab-item.active { color: #1a73e8; border-bottom-color: #1a73e8; }
+        
+        .logo-escola { max-width: 120px; margin-bottom: 15px; border-radius: 8px; }
+        h2, h3 { color: #1a73e8; margin-bottom: 15px; font-size: 1.4rem; }
+        label { font-weight: bold; display: block; margin-top: 12px; color: #444; text-align: left; }
+        input, select, textarea { width: 100%; padding: 14px; margin-top: 5px; border: 1.5px solid #ccd1d9; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
+        button { width: 100%; padding: 16px; margin-top: 20px; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; transition: 0.3s; }
+        .btn-blue { background-color: #1a73e8; color: white; }
+        .btn-green { background-color: #25d366; color: white; }
+        .btn-secondary { background-color: #6c757d; color: white; }
+        .checkbox-group { text-align: left; background: #f9f9f9; padding: 10px; border-radius: 8px; border: 1px solid #ddd; margin-top: 5px; max-height: 250px; overflow-y: auto; }
+        .checkbox-item { display: flex; align-items: center; margin-bottom: 8px; cursor: pointer; font-size: 0.9rem; }
+        .checkbox-item input { width: auto; margin-right: 10px; transform: scale(1.1); }
+        .info-aluno { background: #e7f3ff; padding: 12px; border-radius: 8px; margin-bottom: 10px; font-weight: bold; color: #1a73e8; }
+        .card-ocorrencia { background: #fff; border: 1px solid #ddd; border-left: 5px solid #1a73e8; padding: 15px; border-radius: 8px; margin-top: 15px; text-align: left; font-size: 0.85rem; word-break: break-all; }
+        .btn-pdf-link { display: block; margin-top: 10px; padding: 10px; background: #1a73e8; color: white; text-decoration: none; border-radius: 8px; text-align: center; font-weight: bold; }
+        .hidden { display: none !important; }
+        .auth-footer { margin-top: 20px; display: flex; justify-content: space-between; font-size: 0.85rem; }
+        .auth-footer a { color: #1a73e8; cursor: pointer; font-weight: bold; text-decoration: none; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header-acoes hidden" id="header-logado">
+        <button class="btn-sair" onclick="acaoSair()">SAIR</button>
+    </div>
+
+    <img src="imagem1.png" alt="Logo" class="logo-escola" id="img-logo-main">
+
+    <div id="tela-login">
+        <h2>EEMTI DRAGÃO DO MAR</h2>
+        <p style="color:#666; margin-top:-10px">Gestão de Ocorrências 2026</p>
+        <input type="email" id="login-email" placeholder="E-mail">
+        <input type="password" id="login-senha" placeholder="Senha">
+        <button class="btn-blue" onclick="acaoLogin()">➡️ENTRAR</button>
+        <div class="auth-footer">
+            <a onclick="solicitarReset()">❓Esqueceu a senha?</a>
+            <a onclick="mostrarTela('tela-cadastro')">🔐Criar conta</a>
+        </div>
+    </div>
+
+    <div id="tela-cadastro" class="hidden">
+        <h2>Novo Cadastro</h2>
+        <input type="email" id="cad-email" placeholder="Seu melhor e-mail">
+        <input type="password" id="cad-senha" placeholder="Crie uma senha (mín. 6 chars)">
+        <button class="btn-blue" onclick="acaoCadastro()">CADASTRAR</button>
+        <button class="btn-secondary" onclick="mostrarTela('tela-login')">VOLTAR</button>
+    </div>
+
+    <div id="tela-selecao" class="hidden">
+        <div class="nav-tabs">
+            <div id="tab-individual" class="tab-item active" onclick="alternarAba('individual')">👤 Individual</div>
+            <div id="tab-dia" class="tab-item" onclick="alternarAba('dia')">📅 Do Dia</div>
+            <div id="tab-registro" class="tab-item" onclick="alternarAba('registro')">➕ Registrar</div>
+        </div>
+
+        <div id="form-selecao">
+            <div id="campos-aluno">
+                <label>Modalidade:</label>
+                <select id="modalidade" onchange="atualizarTurmas()">
+                    <option value="">Selecione...</option>
+                    <option value="integral">Integral</option>
+                    <option value="noturno">Noturno</option>
+                </select>
+                <label>Turma:</label>
+                <select id="turma" onchange="atualizarAlunos()"><option value="">Selecione a turma...</option></select>
+                <label>Aluno:</label>
+                <select id="aluno"><option value="">Selecione o aluno...</option></select>
+            </div>
+
+            <div id="campo-data" class="hidden">
+                <label>Selecione a Data:</label>
+                <input type="date" id="filtro-data">
+            </div>
+
+            <button id="btn-acao-principal" class="btn-blue" onclick="acaoBotaoPrincipal()">BUSCAR REGISTROS</button>
+        </div>
+
+        <div id="resultados-consulta" class="hidden">
+            <div id="lista-ocorrencias-aluno"></div>
+            <button class="btn-secondary" onclick="limparConsulta()">VOLTAR</button>
+        </div>
+    </div>
+
+    <div id="tela-formulario" class="hidden">
+        <h3>Nova Ocorrência</h3>
+        <div class="info-aluno">📌 <span id="nome-aluno-confirmado"></span></div>
+        
+        <label>Selecione as Indisciplinas:</label>
+        <div class="checkbox-group" id="tipos-ocorrencia">
+            <label class="checkbox-item"><input type="checkbox" data-label="Fora do mapa de sala"> Fora do mapa de sala</label>
+            <label class="checkbox-item"><input type="checkbox" data-label="Chegou atrasado(a) na escola, limite é 7h45 !"> Chegou atrasado(a) na escola, limite é 7h45 !</label>
+            <label class="checkbox-item"><input type="checkbox" data-label="Não usa o uniforme escolar"> Não usa o uniforme escolar</label>
+            <label class="checkbox-item"><input type="checkbox" data-label="Uso indevido do celular em sala"> Uso indevido do celular em sala</label>
+            <label class="checkbox-item"><input type="checkbox" data-label="Ausência de sala sem autorização"> Ausência de sala sem autorização</label>
+            <label class="checkbox-item"><input type="checkbox" data-label="Conversa excessiva/Tumulto"> Conversa excessiva/Tumulto</label>
+            <label class="checkbox-item"><input type="checkbox" data-label="Desrespeito com professor/funcionário"> Desrespeito com professor/funcionário</label>
+            <label class="checkbox-item"><input type="checkbox" data-label="Agressão verbal contra colega"> Agressão verbal contra colega</label>
+            <label class="checkbox-item"><input type="checkbox" data-label="Agressão física (Luta/Briga)"> Agressão física (Luta/Briga)</label>
+            <label class="checkbox-item"><input type="checkbox" data-label="Dano ao patrimônio público"> Dano ao patrimônio público</label>
+            <label class="checkbox-item"><input type="checkbox" data-label="Brincadeiras inadequadas"> Brincadeiras inadequadas</label>
+            <label class="checkbox-item"><input type="checkbox" data-label="Atraso para o início da aula"> Atraso para o início da aula</label>
+            <label class="checkbox-item"><input type="checkbox" data-label="Chegou atrasado(a) na sala após intervalo/almoço"> Chegou atrasado(a) na sala após intervalo/almoço</label>
+            <label class="checkbox-item"><input type="checkbox" data-label="Recusa em realizar atividades"> Recusa em realizar atividades</label>
+            <label class="checkbox-item"><input type="checkbox" data-label="Linguagem imprópria/Palavrões"> Linguagem imprópria/Palavrões</label>
+            <label class="checkbox-item"><input type="checkbox" data-label="Saída antecipada da escola"> Saída antecipada da escola</label>
+            <label class="checkbox-item"><input type="checkbox" data-label="Comportamento inadequado no refeitório"> Comportamento inadequado no refeitório</label>
+        </div>
+
+        <label>Descrição dos Fatos:</label>
+        <textarea id="descricao" rows="4" placeholder="Relate os detalhes do ocorrido..."></textarea>
+        
+        <label>Houve algum tipo de Agressão?</label>
+        <select id="houve-agressao"><option>Não</option><option>Sim (Física)</option><option>Sim (Verbal)</option></select>
+        
+        <label>Medida Adotada / Sanção:</label>
+        <input type="text" id="penalidades" placeholder="Ex: Advertência, Suspensão, Chamada do resp.">
+        
+        <label>WhatsApp do Responsável:</label>
+        <input type="tel" id="whatsapp-fone" placeholder="85900000000">
+        
+        <button class="btn-green" id="btn-finalizar" onclick="gerarEEnviar()">💾SALVAR E ✅NOTIFICAR </button>
+        <button class="btn-secondary" onclick="novaOcorrencia()">❌CANCELAR</button>
+    </div>
+</div>
+
+<script>
+    const SUPABASE_URL = 'https://mspucfzsdpejwnhmwwmk.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_E6S5Xx028e1ue_4EQsj6qA_tBilAr8R';
+    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyMlYTKrLtiiZ5BI7IK7BBby8vW86dEq9WPptSyjacowDDBma1Wim2uSNsanKVuC_Dv/exec'; 
+
+    let professorLogado = "";
+    let abaAtual = "individual"; 
+
+    // DADOS ESCOLA (Omitidos aqui por espaço, mas estão preservados no seu código final)
+    const dadosEscola = {
+        integral: {
+            "1º A": ["ANA BEATRIZ CABRAL DA SILVA", "ANA BEATRIZ DANTAS BERNARDO","RONNALD LOPES de OLIVEIRA","ANA BEATRIZ OLIVEIRA SERRA", "ANA CAROLYNA CARNEIRO SOUSA", "ANA LUIZA DE SOUSA LOURENCO", "ANNA JULIA RODRIGUES DE MELO", "DEBORA IOLANDA GOMES DA SILVA", "DEVIDSON RAMOS DE OLIVEIRA", "DIOGO SANTOS FERREIRA", "FERNANDO ERLANIO DE OLIVEIRA AGUIAR", "JESSICA DEBORA SILVA OLIVEIRA", "JOAO GABRIEL SOUSA RODRIGUES", "JOAO LUCAS SOUSA DA COSTA", "JORGE MIGUEL ARAUJO LOPES", "JULIA EVELLEN PAIVA DA SILVA", "KAILANY DA SILVA COSTA", "KAROLLAINY OLIVEIRA SOUSA", "KAUA ARAUJO MENDES", "LUIS GUSTAVO COSTA FERNANDES", "LUNNA DE LIMA ABREU", "MARA LIDIA FERREIRA DE FARIAS", "MARIA ALICIA CARVALHO NUNES", "MARIA CLARA DA CRUZ SILVA", "MARIA EDUARDA BERNARDO SOUZA", "MARIA ISABEL ALVES PEREIRA", "MARYA EDUARDA DOS SANTOS LOBAO", "MOISES ARCANJO FLOR FERREIRA", "RAYSSA DA SILVA RODRIGUES", "RYAN DA SILVA COSTA", "SAMUEL SANTIAGO DE LIMA", "SAMYRA MARIA CAVALCANTE CRUZ", "THALES GABRIEL FERREIRA DE LIMA", "TIAGO TAVARES SOUZA", "YANN FERREIRA SILVA COELHO", "YASMIN SILVA COUTO"],
+            "1º B": ["ALESSANDRO DOS SANTOS RODRIGUES", "ANA ESTER DA SILVA FELIX", "ANA RUTY PEREIRA DOS SANTOS", "ARIELE DE CARVALHO GONDIM BARBOSA LEMOS", "BERNARDO BATISTA LIMA", "BRENO HENRIQUE CASTRO VALENTIM", "EDUARDO SOUSA GAMA", "ESTER VIRGINIO MARIANO", "FILIPE BRAS DE PAULA", "FRANCISCO EDILSON OLIVEIRA ANDRADE", "GABRIELA RODRIGUES DOS SANTOS", "GEORGE TEODOZIO SILVA", "GUSTAVO NERY TEIXEIRA DE PAULA", "IAN DE ABREU VIANA", "JOSE MARLEY MENDES DOS SANTOS", "LARA WINY SOUSA DA SILVA", "LOUISE ANDRYA FERREIRA DE SOUSA LIMA", "LUARA KALYNE DA CONCEICAO SARAIVA", "LUDMILA LOPES EVANGELISTA", "MARCOS VINICIUS ARAUJO LIMA ALVES", "MARIA BEATRIZ TELES GUEDES DE SOUSA", "MARIA EDUARDA MARTINS DANTAS", "MARIA GABRIELA DA SILVA MACEDO ARAUJO", "MARIA MANUELA FERREIRA LIMA", "MARIA VITORIA SANTOS DE LIMA", "MAYRA ALEXANDRA DOS SANTOS CARMO", "MIGUEL ANTONIO LOPES DA CUNHA", "NATHALLY ELOAR DO SANTOS HENRIQUE DA SILVA", "PAULO LUCAS VIEIRA DOS SANTOS", "PEDRO LUAN OLIVEIRA SANTOS", "PEDRO LUCAS ARAUJO BRAUNA", "RHUAN DE BRITO RODRIGUES", "RODRIGO OLIVEIRA DA SILVA", "SAULO LUKA PESSOA TABOSA", "YAN DAVID FEITOSA RODRIGUES"],
+            "1º C": ["ALICE FIRMINO DOS SANTOS SILVEIRA", "ANA LIVIA DA CRUZ BORGES", "ANA VITORIA SOUSA DE LIMA", "LUCY HELEONORA DA COSTA GOMES", "BRIAN VALENTE DOS SANTOS", "CAIO VICTOR SALES DO NASCIMENTO", "CARLOS YUDI SILVA DO NASCIMENTO", "CECILIA BORGES OLIVEIRA", "DALILA SIMONE DOS SANTOS", "ELNATAN DOS REIS RODRIGUES", "ERICK SANTOS ARAUJO", "FABIANO SANTIAGO DOS ANJOS", "FRANCISCO MANOEL DOS ANJOS DA SILVA", "GABRIEL CASTRO DE SOUSA", "HELLEN MARIA DO NASCIMENTO BERNARDO", "ISABELE ROCHA FERREIRA", "JOAO LEVI GOMES VIEIRA", "JOAO PEDRO LIMA SOARES", "JOAO VITOR DE PAULO DO NASCIMENTO", "JOSE CAUA DOS SANTOS RODRIGUES", "JULIA NICOLY DE LIMA", "KEVEN GABRIEL DE SOUSA RIBEIRO", "LUIZ OTAVIO DA SILVA MOREIRA", "MARIA EDUARDA BEZERRA SANTOS", "MARIA EDUARDA RODRIGUES GUIMARAES", "MARIA LUIZA DA SILVA FRANCA", "MARIA VITORIA DA SILVA DO NASCIMENTO", "SAMUEL FREITAS ALVES", "SARAH KELLY FERREIRA SOUSA", "YAN MIQUEIAS OLIVEIRA ALVES", "YASMIN PESSOA DA ROCHA", "RONNALD LOPES DE OLIVEIRA", "EMANUEL ARAÚJO MANSUR", "SAMUEL DO VALE DE OLIVEIRA", "VITÓRIA NYCOLE LOPES DE OLIVEIRA", "PEDRO GABRIEL TABOSA ROSENO", "ANA KETHELLY AGUIAR DE SOUZA"],
+            "2º A": ["ANA LIVIA DOS SANTOS BARATA", "ANTONIO VINICIUS ROCHA FERREIRA", "BRYANN VICTOR PEREIRA XAVIER", "CARLA SAMANTHA DE OLIVEIRA ASSARE", "CLARISSE YASMIN DA SILVA EVARISTO", "EMANUELLE HIGINO DE SOUZA", "ENZO DOS SANTOS MONTEIRO", "ERIK DOUGLAS LIMA MARTINS", "FRANCISCO WEVERTON DOS SANTOS", "GUILHERMY KAUA DA SILVA FERREIRA", "IRVINA AGATA DA SILVA FRANCA", "JENYFER RAISSA DO NASCIMENTO COSTA", "JESSIANE RIBEIRO CARNEIRO", "KAUA GUILHERME CRUZ SILVA", "KELRIANE BARROS DA COSTA", "LUIZ EDUARDO LOURENCO FIGUEIRA MACEDO", "MARCOS KAYRON ALBUQUERQUE ALVES", "MARIA IONARA FERREIRA DOS SANTOS", "MARIA SARAH LOPES DE BRITO", "MAYCON DO NASCIMENTO PEREIRA", "NARA LAUANE CARNEIRO FERREIRA", "PEDRO GABRIEL MOREIRA DA COSTA", "PEDRO HENRIQUE SOUSA MARTINS DA SILVA", "PEDRO VINÍCIUS OLIVEIRA DOS ANGELOS", "RYAN BARBOSA DE SOUSA", "SUELEN CRISTINA FARIAS LEAL", "VITORIA SANTOS DE OLIVEIRA SILVA", "WELLY DE CASTRO BULHOES"],
+            "2º B": ["ANA BRUNA FELIX ACARCIO PEREIRA", "ANA LAYS DE ALMEIDA", "ANA LIVIA VASCONCELOS LOBO ROCHA", "ANA VITORIA DE SOUZA AMARAL", "CALEBE DA SILVA SANTOS", "CECILIA SILVA OLIVEIRA", "DEBORAH CARVALHO BEZERRA", "GLENDA VITORIA GOMES DE LIVIA", "GUILHERME BARBOSA LOURENCO", "JOAO PIERRY ALVES DE OLIVEIRA", "JOEL BARBOSA EVANGELISTA", "KAROLYNNE", "KERISSON ANDRADE AMORIM", "KEYLLON VITORIO DE SOUZA AMBE","LUÍS HENRIQUE ALVES DE OLIVEIRA", "LUANA FONSECA MONTEIRO", "LUCAS OLIVEIRA DE SOUZA", "MARCOS VINICIUS SILVANO BATISTA", "MARIA EDUARDA SANTANA RODRIGUES", "MARIA HELLEN SOUSA BARROS", "MIGUEL RONEY PEREIRA DUARTE", "MOYSHES GOMES DO NASCIMENTO", "NICOLAS DE FREITAS LOPES", "NYKOLAS PEREIRA RIOS", "PEDRO RIBEIRO HOLANDA", "RIHANHA FERREIRA DOS REIS", "RYANBERG FERREIRA BARBOSA DA SILVA", "VARVARA OZEROVA", "VICTOR GABRIEL LIMA DE SOUZA", "YAN DHARLLYS MARTINS DO NASCIMENTO"],
+            "2º C": ["AMANDA PEREIRA DA PENHA", "ANA JULIA FERNANDES DE SOUSA", "ANA LARA CORREIA LOPES", "ARTHUR CARLOS DE ALMEIDA MOTTA", "ARTHUR MONTENEGRA VENANCIO", "BRENDA PEREIRA LIMA", "ELLEN CRISTINA SILVA DOS SANTOS", "EZEQUIEL GOMES DE SENA", "FRANCISCA SAMILLY DA SILVA ARAUJO", "GABRIEL ARAUJO SILVA", "GABRIEL ONOFRE DE SOUSA MACIEL", "HELOARA MORAES VERCOSA", "JOSE ELIVELTON OLIVEIRA MAGALHAES", "KAUA EMERSON LIMA MENEZES", "KAYANNE RODRIGUES TEIXEIRA", "KENCIANE OLIVEIRA DE SOUSA", "MARIA ALICE RIBEIRO DA SILVA", "MARIA APARECIDA SILVA DE SOUZA", "MARIA EDUARDA CARIOLANO DE ARAUJO", "MARIA FERNANDA SILVA DOS SANTOS FELIX", "MARIA LAYANE MONTEIRO DE LIMA", "MIGUEL VASCONCELOS DINIZ", "MIRELLA DE PAULA NASCIMENTO", "PEDRO ADRIAN DA SILVA", "PEDRO ITALO MAIA SOUSA", "PEDRO LUCAS FEIJÓ", "REBECA DIOGO SILVA MONTENEGRO", "SAMYLLY RAYSSA DIAS ARAUJO", "SUZANNA RAFAELLE COSTA S. DO NASCIMENTO", "YURI ANDRADE DA MATA"],
+            "3º A": ["ADRYAN DE PAULA ANDRADE", "ALISSON COSTA DA SILVA", "ANA BEATRIZ FURTADO TAVARES", "ANA CAROLINE AIRES PEREIRA", "ARIANI DA GUIA DOS SANTOS", "BRUNO KENNEDY SOUSA SOARES", "CAMILY DE OLIVEIRA COSTA", "DANIELA CASTRO DE SOUZA", "DIOGO ADRIAN TAVARES DE LIMA", "EMANUELLE FERREIRA DE SOUSA", "EMANUELLY DE CASSIA PINTO QUEIROZ", "EMILY SOARES CUNHA GOMES", "FERNANDO ANTONIO MOTA DE SOUSA FILHO", "ISABELLA ALVES PEREIRA", "IZABELLE CARVALHO SILVA", "JEFERSON LAZANO MENDES DINIZ", "JOAO NICOLAS DO NASCIMENTO", "JOÃO PEDRO", "KAYLA VITORIA MARQUES CAMPOS", "KELTON MATEUS DE SOUSA NEVES", "LARA RAYELE BORGES GOES", "LAYS NAYRA GOMES FERREIRA", "LETICIA BARBOSA TEIXEIRA", "LIAN DE SOUSA FERREIRA", "LUIDY RAYAN PEREIRA DA SILVA", "LUIS DANIEL ALMEIDA DA SILVA", "LUIZ GUSTAVO SANTANA DA MATA", "MARIA FERNANDA SILVA SOUSA", "PEDRO ERICK BEZERRA DE LIMA", "PEDRO LUCAS DA SILVA GOMES", "PEDRO LUCAS LOPES MATIAS", "SILAS DOS SANTOS ALMEIDA", "YARLEI FERREIRA LOBAO", "YASMIM LOURENCO DE FREITAS"],
+            "3º B": ["ANA ALICE RODRIGUES DA SILVA", "ANA CLARA DOS SANTOS DE PAULA", "ANA KARINE ALBERTO SILVA", "ANA LUIZA ALVES DE OLIVEIRA", "ANDRE HENRIQUE DE SOUZA CAMPOS", "ANGELA PATRICIA OLIVEIRA FRANCA LIMA", "ANTONIA VANESSA LIMA DA MATA", "CARLOS MISAEL DA SILVA FELIX", "EDUARDA GABRIELE FERREIRA DOS SANTOS", "FLÁVIO NOGUEIRA FILHO", "FRANCISCO HUGO DA SILVA ARAUJO", "FRANCISCO RENAN DE SOUZA RODRIGUES", "GABRIEL VITOR ABREU MORAES", "GUDSON MACEDO SANTANA", "ISAAC ASSUNCAO RODRIGUES DE MATOS", "JOAO MANOEL DIONIZIO DA SILVA", "JOAO VICTOR SOUSA DA COSTA", "JOSE ADRIEL DE SOUSA Bernardo", "JOSE RENAN ARAUJO LIMA CASTRO", "KATHERINE LEITE BRAGA", "KERLLON PAZ DA SILVA", "LARA GABRIELLE RODRIGUES MORAIS", "LETICIA HONORATO ALVES", "LUCAS DOS SANTOS MATOKANOVIC", "MARCIO MARLEY RIBEIRO DA SILVA", "MARCUS YUAN PACHECO DE SOUSA", "MARIA CLARA CALDAS RODRIGUES", "MARIA EVELYN DA SILVA SABINO", "ROMAN DUBOVIK", "RYAN PEREIRA DE SOUSA", "RYANNA FERREIRA RODRIGUES", "SAMUEL MOREIRA FERREIRA", "VERONICA DANIELA NUNEZ TORRES", "WESLEI FERREIRA GOIS", "YORRANA DA SILVA GONÇALVES"]
+        },
+        noturno: {
+            "1º D": ["ANA PAULA FERREIRA DA SILVA", "ANA LARA LOPES POLICARPO", "CARLOS EDUARDO S. NASCIMENTO", "CARLOS ICARO SOUSA BARRETO", "CARMEN LÚCIA DO NASCIMENTO SANTOS", "CYNTHIA BIANCA RIBEIRO", "DHEIMISON LEANDRO", "DIOGO VINICIUS RIBEIRO DE SOUSA", "EDUARDO DA SILVA SILVEIRA", "FRANCISCA SILVANEIDE DA SILVA", "JOSE CAUA DOS SANTOS RODRIGUES", "LAURA CLARIANE LIMA DUARTE", "LUAN RODRIGUES DE MORAIS", "MARIA FREITAS DE ALMEIDA", "MARIA GABRIELA VERAS FERREIRA", "MARIA VANUSIA COELHO", "NATANAEL LOBAO DA SILVA", "NATIELE GOMES COSTA", "RAYSSA SOUSA COSTA", "ROSA MARIA DA SILVA", "SAMUEL COSTA REBOUCAS", "SIMONE ALVES DE SOUSA", "THAYSSA STHER FELIX REBOUÇAS", "WILCKY SANTOS PEREIRA", "YOHANA CORTEZ DE AZEVEDO", "YURI TEIXEIRA DA SILVA", "Joyse kely", "Marina Rodrigues"],
+            "2º D": ["ARIEL LUCAS CARVALHO", "ARIELY LETÍCIA LIMA OLIVEIRA", "CARLOS RYAN OLIVEIRA FERREIRA", "DOUGLAS MARCELO FERNANDES OLIVEIRA DE MELO", "ELOIZA ZAQUEU DA SILVA SANTOS", "EMILY AZEVEDO DOS SANTOS", "FAGNER LUCENA DA SILVA", "FRANCISCO DAVI RIBEIRO FREITAS", "FRANCISCO ELIVERTON ALVES DIAS", "GABRIEL HENRIQUE FREITAS DE CARVALHO", "JOAO MARCOS NOGUEIRA PEREIRA", "JOSE ROMULO FACUNDE DA SILVA", "JULYAM NAYRIS GUEDES ALBUQUERQUE", "KATIANE DE SOUZA JULIAO GOMES", "KAUA CUNHA MATIAS", "LEANDRO RAQUEL GOMES", "LUANA PRISCILA OLIVEIRA", "LUCAS HONORIO DE SOUSA", "MARIA SUYANE BARBOSA GOMES", "MELISSA DOS SANTOS VITURINO", "PEDRO YTALLO ALVES DE ARAUJO MOTA", "RAY PEREIRA ROCHA NOGUEIRA", "RAYANE BERNARDO DA SILVA SOARES", "RIAN DE LIMA NASCIMENTO", "SARA ROCHA DE SENA", "STEPHANY REIS FONSECA", "TAINARA DE SOUZA", "NICOLE KETLIN DE OLIVEIRA", "ANA LUIZA LOMBARDI MESQUITA", "GABRIEL FREITAS DOS SANTOS", "LUZIA KETTILY", "FRANCISCO WEVERTON DOS SANTOS"],
+            "3º C": ["ANA LUISA PEREIRA DOS SANTOS", "ARYANE SILVA DA GUIA", "EDUARDO DA SILVA MACEDO ARAUJO", "ERIANA KEZIA NASCIMENTO RODRIGUES", "FRANCISCA ELLEN CASTRO DOS SANTOS", "GABRIELEM MARIA LIMA DE CASTRO", "IZABELE MARTINS DE SOUSA", "JOAO MARCELO CESARIO DA SILVA", "JONATHAN VITOR DA SILVA ALVES", "KAUA CARDOSO DE OLIVEIRA", "KAUA KEVEN AZEVEDO DA SILVA", "LUIZ DAVI CRUZ DA ROCHA", "MARIA JAMILE DE SOUSA PEREIRA", "MARIA REBECA SILVA DA CRUZ", "MARIANA NASCIMENTO DA SILVA", "NICOLAS ARAUJE DE FREITAS", "SAMUEL RODRIGUES GOMES", "SARA DOS SANTOS HAYASHI", "VITORIA CAROLINE MORAIS DE LIMA", "WESLEY SANTANA FIRMINO", "ISRAEL LUIS DE PAULA ROCHA", "DANILO DOS SANTOS PEREIRA", "LUCAS DIOGO", "GABRIEL VALENTIM", "Adalberto", "Paulo Renan"]
+        }
+    };
+
+    function mostrarTela(id) {
+        document.querySelectorAll('.container > div').forEach(div => { if(div.id) div.classList.add('hidden'); });
+        if(['tela-selecao','tela-formulario'].includes(id)) document.getElementById('header-logado').classList.remove('hidden');
+        else document.getElementById('header-logado').classList.add('hidden');
+        document.getElementById(id).classList.remove('hidden');
+    }
+
+    function alternarAba(aba) {
+        abaAtual = aba;
+        document.getElementById('tab-individual').classList.toggle('active', aba === 'individual');
+        document.getElementById('tab-dia').classList.toggle('active', aba === 'dia');
+        document.getElementById('tab-registro').classList.toggle('active', aba === 'registro');
+        
+        const camposAluno = document.getElementById('campos-aluno');
+        const campoData = document.getElementById('campo-data');
+        const btn = document.getElementById('btn-acao-principal');
+
+        if (aba === 'individual') {
+            camposAluno.classList.remove('hidden');
+            campoData.classList.add('hidden');
+            btn.innerText = 'BUSCAR HISTÓRICO';
+        } else if (aba === 'dia') {
+            camposAluno.classList.add('hidden');
+            campoData.classList.remove('hidden');
+            btn.innerText = 'BUSCAR OCORRÊNCIAS DO DIA';
+        } else if (aba === 'registro') {
+            camposAluno.classList.remove('hidden');
+            campoData.classList.add('hidden');
+            btn.innerText = 'AVANÇAR PARA REGISTRO';
+        }
+        limparConsulta();
+    }
+
+    function atualizarTurmas() {
+        const mod = document.getElementById('modalidade').value;
+        const sel = document.getElementById('turma');
+        sel.innerHTML = '<option value="">Selecione...</option>';
+        if(mod) Object.keys(dadosEscola[mod]).forEach(t => sel.innerHTML += `<option value="${t}">${t}</option>`);
+    }
+
+    function atualizarAlunos() {
+        const mod = document.getElementById('modalidade').value;
+        const tur = document.getElementById('turma').value;
+        const sel = document.getElementById('aluno');
+        sel.innerHTML = '<option value="">Selecione...</option>';
+        if(mod && tur) dadosEscola[mod][tur].sort().forEach(a => sel.innerHTML += `<option value="${a}">${a}</option>`);
+    }
+
+    async function acaoLogin() {
+        const email = document.getElementById('login-email').value;
+        const senha = document.getElementById('login-senha').value;
+        const { data, error } = await _supabase.auth.signInWithPassword({ email, password: senha });
+        if (error) alert("Credenciais incorretas.");
+        else { professorLogado = data.user.email; mostrarTela('tela-selecao'); alternarAba('individual'); }
+    }
+
+    async function acaoCadastro() {
+        const email = document.getElementById('cad-email').value;
+        const senha = document.getElementById('cad-senha').value;
+        if (!email || senha.length < 6) return alert("E-mail inválido ou senha curta.");
+        const { error } = await _supabase.auth.signUp({ email, password: senha });
+        if (error) alert("Erro: " + error.message);
+        else { alert("Cadastro realizado! Verifique seu e-mail."); mostrarTela('tela-login'); }
+    }
+
+    async function solicitarReset() {
+        const email = prompt("E-mail para recuperação:");
+        if (!email) return;
+        const { error } = await _supabase.auth.resetPasswordForEmail(email);
+        if (error) alert("Erro: " + error.message);
+        else alert("Link enviado!");
+    }
+
+    async function acaoSair() { await _supabase.auth.signOut(); window.location.reload(); }
+
+    async function acaoBotaoPrincipal() {
+        const aluno = document.getElementById('aluno').value;
+        const dataFiltro = document.getElementById('filtro-data').value;
+
+        if(abaAtual === 'registro') {
+            if(!aluno) return alert("Selecione um aluno para registrar.");
+            document.getElementById('nome-aluno-confirmado').innerText = aluno;
+            mostrarTela('tela-formulario');
+        } else if (abaAtual === 'individual') {
+            if(!aluno) return alert("Selecione um aluno para consultar.");
+            const { data, error } = await _supabase.from('ocorrencias').select('*').eq('aluno', aluno).order('id', { ascending: false });
+            if (error) alert("Erro ao carregar histórico.");
+            else exibirResultados(data, `Histórico de: ${aluno}`);
+        } else if (abaAtual === 'dia') {
+            if(!dataFiltro) return alert("Selecione um dia no calendário.");
+            const dataFormatada = dataFiltro.split('-').reverse().join('/');
+            const { data, error } = await _supabase.from('ocorrencias').select('*').like('data_hora', `%${dataFormatada}%`).order('id', { ascending: false });
+            if (error) alert("Erro ao buscar ocorrências.");
+            else exibirResultados(data, `Ocorrências do dia: ${dataFormatada}`);
+        }
+    }
+
+    function exibirResultados(dados, titulo) {
+        document.getElementById('form-selecao').classList.add('hidden');
+        document.getElementById('resultados-consulta').classList.remove('hidden');
+        const lista = document.getElementById('lista-ocorrencias-aluno');
+        lista.innerHTML = `<h3>${titulo} (${dados.length})</h3>`;
+        if(dados.length === 0) { lista.innerHTML += "<p>Nenhum registro encontrado para este critério.</p>"; return; }
+        dados.forEach(oc => {
+            const link = oc.url_pdf ? `<a href="${oc.url_pdf}" target="_blank" class="btn-pdf-link">📄 ACESSAR DOCUMENTO ORIGINAL</a>` : "";
+            lista.innerHTML += `
+                <div class="card-ocorrencia">
+                    <b>🎓 Aluno:</b> ${oc.aluno}<br>
+                    <b>📅 Data:</b> ${oc.data_hora}<br>
+                    <b>⚠️ Indisciplina(s):</b> ${oc.tipos_selecionados}<br>
+                    <b>⚖️ Medida:</b> ${oc.penalidades || 'A definir'}<br>
+                    <b>👤 Prof:</b> ${oc.professor}
+                    <hr>${link}
+                </div>`;
+        });
+    }
+
+    function limparConsulta() { 
+        document.getElementById('form-selecao').classList.remove('hidden'); 
+        document.getElementById('resultados-consulta').classList.add('hidden'); 
+    }
+
+    function novaOcorrencia() { 
+        document.getElementById('descricao').value = "";
+        document.getElementById('penalidades').value = "";
+        document.querySelectorAll('#tipos-ocorrencia input').forEach(c => c.checked = false);
+        mostrarTela('tela-selecao');
+        alternarAba('registro');
+    }
+
+    function carregarImagem(src) {
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => resolve(img);
+            img.onerror = reject;
+            img.src = src;
+        });
+    }
+
+    // --- FUNÇÃO GERAR E ENVIAR COM ESQUELETO ORIGINAL DO WHATSAPP E PDF ---
+    async function gerarEEnviar() {
+        const aluno = document.getElementById('nome-aluno-confirmado').innerText.trim();
+        const turma = document.getElementById('turma').value;
+        const obs = document.getElementById('descricao').value.trim();
+        const agr = document.getElementById('houve-agressao').value;
+        const pen = document.getElementById('penalidades').value.trim();
+        const fone = document.getElementById('whatsapp-fone').value.trim();
+        
+        let selecionados = [];
+        document.querySelectorAll('#tipos-ocorrencia input:checked').forEach(c => selecionados.push(c.getAttribute('data-label')));
+        
+        if(selecionados.length === 0 && !obs) return alert("Descreva os fatos ou marque uma indisciplina.");
+        if(!fone) return alert("Número do WhatsApp é obrigatório.");
+
+        const btn = document.getElementById('btn-finalizar');
+        btn.innerText = "PROCESSANDO..."; 
+        btn.disabled = true;
+
+        const agora = new Date();
+        const dataF = agora.toLocaleDateString('pt-BR');
+        const horaF = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
+        try {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const margin = 18;
+            let y = margin;
+
+            doc.setFillColor(26, 73, 144);
+            doc.rect(0, 0, 210, 40, 'F');
+
+            try {
+                const logo = await carregarImagem('imagem1.png');
+                doc.addImage(logo, 'PNG', 85, 3, 40, 40);
+            } catch (e) { console.warn("Logo não carregado"); }
+
+            doc.setFontSize(20);
+            doc.setTextColor(255);
+            doc.setFont("helvetica", "bold");
+            doc.text("EEMTI DRAGÃO DO MAR", 105, 35, { align: "center" });
+
+            doc.setFontSize(10);
+            doc.setTextColor(220, 230, 255);
+            doc.text("SISTEMA DIGITAL DE GESTÃO DISCIPLINAR", 105, 38, { align: "center" });
+
+            y = 45;
+            doc.setDrawColor(187, 222, 251);
+            doc.rect(margin, y, 174, 32);
+            doc.setFontSize(10);
+            doc.setTextColor(0);
+
+            doc.setFont("helvetica", "bold"); doc.text("ALUNO(A):", margin+5, y+8);
+            doc.setFont("helvetica", "normal"); doc.text(aluno, margin+40, y+8);
+            doc.setFont("helvetica", "bold"); doc.text("TURMA:", margin+5, y+15);
+            doc.setFont("helvetica", "normal"); doc.text(turma, margin+40, y+15);
+            doc.setFont("helvetica", "bold"); doc.text("DATA/HORA:", margin+5, y+22);
+            doc.setFont("helvetica", "normal"); doc.text(`${dataF} às ${horaF}`, margin+40, y+22);
+            doc.setFont("helvetica", "bold"); doc.text("EMISSOR:", margin+5, y+29);
+            doc.setFont("helvetica", "normal"); doc.text(professorLogado, margin+40, y+29);
+
+            y += 40;
+            doc.setFontSize(11);
+            doc.setTextColor(26, 73, 144);
+            doc.text("INDISCIPLINA(S) REGISTRADA(S):", margin, y);
+            y += 6;
+
+            const hInfra = selecionados.length * 6 + 8;
+            doc.rect(margin, y, 174, hInfra);
+            doc.setFontSize(9);
+            doc.setTextColor(0);
+            selecionados.forEach((item, i) => { doc.text(`[X] ${item}`, margin + 5, y + 5 + i * 6); });
+            
+            y += hInfra + 12;
+            doc.setFontSize(11);
+            doc.setTextColor(26, 73, 144);
+            doc.text("DESCRIÇÃO DOS FATOS E MEDIDAS:", margin, y);
+            y += 8;
+
+            doc.setFontSize(11);
+            doc.setFont("helvetica", "bold");
+            doc.setTextColor(0);
+            doc.text("Relato:", margin + 5, y);
+            y += 6;
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(9);
+            const linhasRelato = doc.splitTextToSize(obs || "Sem descrição detalhada.", 164);
+            doc.text(linhasRelato, margin + 5, y);
+            y += linhasRelato.length * 5.5 + 8;
+
+            doc.setFontSize(11);
+            doc.setFont("helvetica", "bold");
+            doc.text("Houve agressão?", margin + 5, y);
+            y += 6;
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(9);
+            doc.text(agr, margin + 5, y);
+            y += 8;
+
+            doc.setFontSize(11);
+            doc.setFont("helvetica", "bold");
+            doc.text("Sanção aplicada:", margin + 5, y);
+            y += 6;
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(9);
+            const linhasSan = doc.splitTextToSize(pen || "A informar.", 164);
+            doc.text(linhasSan, margin + 5, y);
+
+            doc.setFontSize(8);
+            doc.setTextColor(120);
+            doc.text("Documento oficial gerado via sistema de ocorrências - 2026", 105, 285, { align: "center" });
+            doc.text("Desenvolvido pelo LEI (Lab. Ensino de Informática da EEMTI DRAGÃO DO MAR)", 105, 290, { align: "center" });
+
+            const pdfBase64 = doc.output('datauristring').split(',')[1];
+            const nomeArq = `Ocorrencia_${turma}_${aluno.split(' ')[0]}.pdf`;
+
+            const respG = await fetch(GOOGLE_SCRIPT_URL, { 
+                method: "POST", 
+                body: JSON.stringify({ "base64": pdfBase64, "nomeArquivo": nomeArq }) 
+            });
+            const resG = await respG.json();
+            const linkDrive = resG.status === "sucesso" ? resG.url : "";
+
+            await _supabase.from('ocorrencias').insert([{
+                aluno, turma, tipos_selecionados: selecionados.join(', '), 
+                observacoes: obs, agressao: agr, penalidades: pen, 
+                professor: professorLogado, data_hora: `${dataF} às ${horaF}`,
+                url_pdf: linkDrive
+            }]);
+
+            // ESQUELETO ORIGINAL DO WHATSAPP
+            const saudacao = `*📎EEMTI DRAGÃO DO MAR - NOTIFICAÇÃO DISCIPLINAR*%0A%0A📌 Olá, informamos um registro de indisciplina para *${aluno}* na escola *EEMTI DRAGÃO DO MAR*.%0A%0A`;
+            const corpoMsg = `*🔎 DETALHES:*%0A*🎓 Aluno:* ${aluno}%0A*📆 Data:* ${dataF} às ${horaF}%0A*⚠️ Ocorrência(s):* ${selecionados.join(', ') || "Não marcado item específico"}%0A%0A*📝 DESCRIÇÃO DOS FATOS:*%0A${obs || "Sem descrição detalhada."}%0A%0A*🥊 Agressão:* ${agr}%0A*⚖️ Medida:* ${pen || 'A informar'}%0A%0A_Documento original arquivado na nuvem._%0A*Emitido por:* ${professorLogado}`;
+            const linkTexto = linkDrive ? `%0A%0A*📄 ACESSE O PDF COMPLETO AQUI:*%0A${linkDrive}` : "";
+            
+            window.open(`https://api.whatsapp.com/send?phone=55${fone}&text=${saudacao}${corpoMsg}${linkTexto}`, '_blank');
+            doc.save(nomeArq);
+            alert("✅ Sucesso! Registro salvo e WhatsApp enviado.");
+            novaOcorrencia();
+        } catch (e) { 
+            console.error(e);
+            alert("Erro durante o processo."); 
+        } finally { 
+            btn.innerText = "💾SALVAR E ✅NOTIFICAR";
+            btn.disabled = false; 
+        }
+    }
+</script>
+</body>
+</html>
