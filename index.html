@@ -29,10 +29,10 @@
         .btn-green { background-color: #25d366; color: white; }
         .btn-secondary { background-color: #6c757d; color: white; }
         .btn-excluir {
-          background: #ff4d4d;
-          color: white;
-          margin-top: 8px;
-                  }
+               background: #ff4d4d;
+               color: white;
+               margin-top: 8px;
+             }
 
         .checkbox-group { text-align: left; background: #f9f9f9; padding: 10px; border-radius: 8px; border: 1px solid #ddd; margin-top: 5px; max-height: 250px; overflow-y: auto; }
         .checkbox-item { display: flex; align-items: center; margin-bottom: 8px; cursor: pointer; font-size: 0.9rem; }
@@ -257,6 +257,15 @@
         document.getElementById('campos-aluno').classList.toggle('hidden', aba==='dia' || aba==='dash');
         document.getElementById('campo-data').classList.toggle('hidden', aba!=='dia');
         document.getElementById('btn-acao-principal').innerText = aba==='dia' ? 'BUSCAR OCORRÊNCIAS DO DIA' : (aba==='registro' ? 'AVANÇAR PARA REGISTRO' : 'BUSCAR HISTÓRICO');
+        const btn = document.getElementById('btn-acao-principal');
+
+if (aba === 'registro' && professorLogado !== 'eem.dragao.mar@gmail.com') {
+    btn.style.opacity = '0.5';
+    btn.style.cursor = 'not-allowed';
+} else {
+    btn.style.opacity = '1';
+    btn.style.cursor = 'pointer';
+}
     }
 
     function atualizarTurmas() {
@@ -301,10 +310,16 @@
         const aluno = document.getElementById('aluno').value;
         const dataFiltro = document.getElementById('filtro-data').value;
         if(abaAtual === 'registro') {
-            if(!aluno) return alert("Selecione o aluno.");
-            document.getElementById('nome-aluno-confirmado').innerText = aluno;
-            mostrarTela('tela-formulario');
-        } else if (abaAtual === 'individual') {
+
+    if (professorLogado !== 'eem.dragao.mar@gmail.com') {
+        mostrarAlerta("🚫 Acesso restrito: apenas a gestão pode registrar ocorrências.");
+        return;
+    }
+
+    if(!aluno) return alert("Selecione o aluno.");
+    document.getElementById('nome-aluno-confirmado').innerText = aluno;
+    mostrarTela('tela-formulario');
+} else if (abaAtual === 'individual') {
             if(!aluno) return alert("Selecione o aluno.");
             const { data } = await _supabase.from('ocorrencias').select('*').eq('aluno', aluno).order('id', { ascending: false });
             dadosAtuaisConsulta = data;
@@ -520,6 +535,14 @@ if (gravidade === 'Grave') {
             novaOcorrencia();
         } catch (e) { alert("Erro ao salvar."); } finally { btn.innerText = "💾SALVAR E ✅NOTIFICAR"; btn.disabled = false; }
     }
+    function mostrarAlerta(msg) {
+    document.getElementById('mensagem-alerta').innerText = msg;
+    document.getElementById('meu-alerta').classList.remove('hidden');
+}
+
+function fecharAlerta() {
+    document.getElementById('meu-alerta').classList.add('hidden');
+}
     async function excluirOcorrencia(id) {
 
     if (professorLogado !== 'eem.dragao.mar@gmail.com') {
@@ -546,5 +569,39 @@ if (gravidade === 'Grave') {
     alert("Excluído com sucesso!");
 }
 </script>
+
+ <div id="meu-alerta" class="hidden" style="
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+">
+    <div style="
+        background: #1e1e1e;
+        color: white;
+        padding: 20px;
+        border-radius: 12px;
+        width: 300px;
+        text-align: center;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    ">
+        <h3 style="margin-top:0;">EEMTI DRAGÃO DO MAR</h3>
+        <p id="mensagem-alerta"></p>
+        <button onclick="fecharAlerta()" style="
+            margin-top: 15px;
+            padding: 8px 20px;
+            border-radius: 20px;
+            border: none;
+            background: #b89cff;
+            cursor: pointer;
+        ">OK</button>
+    </div>
+</div>
 </body>
 </html>
