@@ -1,5 +1,16 @@
 export default async function handler(req, res) {
 
+  // 🔥 ADICIONE ISSO AQUI (logo no início)
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "*");
+
+  // 👇 ESSENCIAL para o navegador (preflight)
+  if (req.method === "OPTIONS") {
+    return res.status(200).end();
+  }
+  
+
   try {
 
     const resposta = await fetch(
