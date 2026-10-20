@@ -189,6 +189,7 @@ const dadosEscola = {
                         "FRANCISCA SAMILLY DA SILVA ARAUJO",
                         "GABRIEL ARAUJO SILVA",
                         "GABRIEL ONOFRE DE SOUSA MACIEL",
+                        "JOSE ELIVELTON OLIVEIRA MAGALHAES",
                         "KAUA EMERSON LIMA MENEZES",
                         "KAYANNE RODRIGUES TEIXEIRA",
                         "KENCIANE OLIVEIRA DE SOUSA",
