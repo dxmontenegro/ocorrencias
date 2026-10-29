@@ -180,7 +180,6 @@ async function gerarEEnviar(){
    if(janelaWhatsApp)janelaWhatsApp.close();
    return alert('Confira o WhatsApp: informe DDD + número (10 ou 11 dígitos).');
  }
- numero='55'+numero;
 
  const btn=document.getElementById('btn-finalizar');
  btn.innerText='PREPARANDO EVIDÊNCIAS...';btn.disabled=true;
@@ -204,15 +203,19 @@ async function gerarEEnviar(){
   const {error:insertError}=await _supabase.from('ocorrencias').insert([registro]);
   if(insertError)throw insertError;
 
-  // Mensagem WhatsApp restaurada do fluxo original app(4).js.
+  // Mensagem WhatsApp
   const saudacao=`*📎EEMTI DRAGÃO DO MAR - NOTIFICAÇÃO DISCIPLINAR*%0A%0A📌 Olá, informamos um registro de indisciplina para o aluno(a) *${aluno}*.%0A%0A`;
   const corpoMsg=`*🔎 DETALHES:*%0A*🎓 Aluno:* ${aluno}%0A*⚖️ Classificação:* ${emojiG}%0A*📆 Data:* ${dataF} às ${horaF}%0A*⚠️ Itens:* ${selecionados.join(', ')}%0A%0A*📝 RELATO:* ${obs||'Não detalhado'}%0A%0A*⚖️ MEDIDA:* ${pen}%0A%0A_Documento original arquivado na nuvem._`;
   const linkTexto=linkDrive?`%0A%0A*📄 ACESSE O PDF COMPLETO AQUI:*%0A${linkDrive}`:'';
-  const urlWhatsApp=`https://api.whatsapp.com/send?phone=55${fone}&text=${saudacao}${corpoMsg}${linkTexto}`;
-  if(janelaWhatsApp && !janelaWhatsApp.closed){ janelaWhatsApp.location.href=urlWhatsApp; }
-  else { window.open(urlWhatsApp,'_blank'); }
+  const urlWhatsApp=`https://api.whatsapp.com/send?phone=55${numero}&text=${saudacao}${corpoMsg}${linkTexto}`;
+  
+  if(janelaWhatsApp && !janelaWhatsApp.closed){ 
+    janelaWhatsApp.location.href=urlWhatsApp; 
+  } else { 
+    window.open(urlWhatsApp,'_blank'); 
+  }
 
-  // Aciona o download local do PDF, como no fluxo original.
+  // Aciona o download local do PDF
   const pdfURL=URL.createObjectURL(pdfBlob),a=document.createElement('a');
   a.href=pdfURL;a.download=`Ocorrencia_${nomeArquivoSeguro(aluno)}.pdf`;
   document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(pdfURL),3000);
