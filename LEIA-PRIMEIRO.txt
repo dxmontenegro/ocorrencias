@@ -1,0 +1,45 @@
+EEMTI DRAGÃO DO MAR — MELHORIA DE EVIDÊNCIAS FOTOGRÁFICAS
+
+CONTEÚDO
+- app.js: fluxo atualizado de upload, persistência, PDF e visualização de evidências.
+- registro.html: botões Câmera e Galeria, prévia e remoção das fotos.
+- styles.css: estilos do módulo de evidências e miniaturas do histórico.
+- supabase-evidencias.sql: coluna JSONB, bucket privado e políticas Storage.
+- demais arquivos: cópias de apoio do conjunto disponibilizado nesta conversa.
+
+INSTALAÇÃO RECOMENDADA
+1. Faça backup dos arquivos atuais do sistema.
+2. No Supabase Dashboard > SQL Editor, execute supabase-evidencias.sql.
+3. Confirme em Storage que existe o bucket ocorrencias-evidencias e que está PRIVATE.
+4. Publique/substitua app.js, registro.html e styles.css. Preserve os demais arquivos/assets do site.
+5. A versão deve servir por HTTPS (ex.: hospedagem atual), necessária para os recursos modernos do navegador e experiência de câmera.
+6. Teste primeiro com registro controlado, incluindo seleção de foto, câmera, gravação, PDF, histórico e exportação.
+
+CONFIGURAÇÃO E ACESSO
+- Bucket: ocorrencias-evidencias (privado).
+- Arquivos: <ID_DO_USUARIO_AUTENTICADO>/<chave_do_registro>/<sequência>.jpg
+- As policies SQL permitem que cada usuário autenticado opere apenas na pasta cujo primeiro segmento é seu auth.uid().
+- O cadastro do sistema restringe a criação do registro ao e-mail administrador que já constava no app.
+- As permissões RLS da tabela public.ocorrencias não são alteradas pelo script. Mantenha as atuais e confira que o administrador consegue inserir e ler seus registros.
+- Nunca coloque service_role key no navegador. O app continua usando a chave publishable/public já existente.
+
+FLUXO NOVO
+1. Escolha aluno e turma, como antes.
+2. Use ABRIR CÂMERA (pode depender do navegador e aparelho) ou ANEXAR DA GALERIA.
+3. Até 5 fotos por ocorrência, até 12 MB por arquivo antes da compressão.
+4. Revise miniaturas e remova imagens se desejar.
+5. Ao salvar, as imagens são convertidas para JPEG, enviadas ao Storage, incluídas no PDF e os caminhos são gravados em ocorrencias.fotos.
+6. O PDF arquivado no Google Drive e o PDF baixado incluem as imagens; o histórico tenta exibir miniaturas via URLs temporárias e reconstrói PDFs com evidências quando possível.
+
+OBSERVAÇÕES IMPORTANTES
+- Não publique o bucket: os links de evidência são assinados temporariamente.
+- Os caminhos em fotos são referências, não URLs públicas.
+- Se o upload concluir e a gravação do registro falhar, pode restar arquivo órfão no Storage. Confira o bucket antes de repetir o lançamento.
+- A captura direta usa input de arquivo com capture="environment"; o navegador/aparelho pode mostrar seletor próprio ou não oferecer a câmera diretamente.
+- Arquivos HEIC/HEIF podem não ser decodificados em todos os navegadores. Prefira JPG/PNG se houver falha.
+- A exportação ZIP usa JSZip carregado na página de histórico, conforme a implementação atual.
+- Os registros históricos sem fotos continuam compatíveis.
+
+
+VERSÃO COM IDENTIDADE VISUAL ESCURA
+Esta edição aplica o tema visual escuro inspirado no layout de referência: fundo #0f172a, painéis #1e293b, superfícies #0f172a, azul/índigo para ações, com verdes e cores de gravidade mantidos. A lógica app.js e os conteúdos funcionais das páginas foram preservados; houve atualização visual no CSS e no estilo da tela de nova senha. A logo está em imagem1.png.

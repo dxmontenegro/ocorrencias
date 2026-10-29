@@ -1,0 +1,26 @@
+SISTEMA DE GESTÃO DE OCORRÊNCIAS — RESTAURAÇÃO
+EEMTI DRAGÃO DO MAR
+
+CONTEÚDO
+- index.html: login
+- cadastro.html: cadastro
+- reset.html e reset-password.html: recuperação/alteração de senha
+- menu.html, individual.html, dia.html, registro.html, estatisticas.html, historico.html
+- app.js, dados.js, styles.css, imagem1.png
+- supabase-evidencias.sql: referência das instruções SQL já tratadas no projeto
+
+INSTALAÇÃO
+1. Extraia TODOS os arquivos para uma única pasta.
+2. Mantenha os nomes e a organização dos arquivos.
+3. Publique a pasta no mesmo serviço/origem do sistema anterior.
+4. Não execute SQL novamente: as configurações do Supabase já foram feitas.
+5. Antes de disponibilizar aos usuários, teste login, registrar ocorrência sem foto,
+   registro com foto, PDF/Drive, histórico e mensagem de WhatsApp.
+
+IMPORTANTE
+- O app.js conserva o fluxo da versão de evidências e usa escapes Unicode explícitos
+  para os emojis montados na mensagem do WhatsApp.
+- A verificação de sintaxe JavaScript não substitui o teste real do Supabase,
+  Google Apps Script/Drive, armazenamento privado, permissões de navegador e WhatsApp.
+- Faça backup da versão atualmente publicada antes de substituir arquivos.
+- Não exponha chaves secretas/service_role no navegador.
