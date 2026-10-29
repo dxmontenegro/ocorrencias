@@ -195,7 +195,6 @@ async function enviarFotosStorage(fotos,registroKey){
  }
  return out;
 }
-
 /* JANELA ANIMADA DE ANDAMENTO */
 function prepararPainelProgresso(){
  if(document.getElementById('painel-progresso'))return;
@@ -231,8 +230,12 @@ function prepararPainelProgresso(){
  const m=document.createElement('div');m.id='painel-progresso';m.setAttribute('role','dialog');m.setAttribute('aria-modal','true');m.setAttribute('aria-live','polite');
  m.innerHTML=`<div class="pp-card"><div class="pp-brand">EEMTI DRAGÃO DO MAR</div><div class="pp-orbit" id="pp-orbit"><span id="pp-icon">✦</span></div><h2 id="pp-title">Preparando registro</h2><p id="pp-desc">Aguarde um instante.</p><div id="pp-steps"></div><div class="pp-bar"><div class="pp-fill" id="pp-fill"></div></div><div id="pp-foot">Iniciando…</div><div id="pp-warning">Não feche esta janela durante o processo.</div><button id="pp-close" type="button">FECHAR</button></div>`;
  document.body.appendChild(m);
- ['Salvando ocorrência','Criando PDF','Abrindo WhatsApp','Finalização'].forEach((t,i)=>{const row=document.createElement('div');row.className='pp-step';row.dataset.i=i;const dot=document.createElement('span');dot.className='pp-dot';dot.textContent=i+1;const label=document.createElement('span');label.textContent=t;row.append(dot,label);m.querySelector('#pp-steps').appendChild(row)});
- m.querySelector('#pp-close').onclick=()=>m.classList.remove('ativo');
+ ['Salvando ocorrência','Criando PDF','Arquivando no Drive','Salvar cópia e concluir'].forEach((t,i)=>{const row=document.createElement('div');row.className='pp-step';row.dataset.i=i;const dot=document.createElement('span');dot.className='pp-dot';dot.textContent=i+1;const label=document.createElement('span');label.textContent=t;row.append(dot,label);m.querySelector('#pp-steps').appendChild(row)});
+ m.querySelector('#pp-close').onclick=()=>{
+  const url=m.dataset.whatsappUrl;
+  if(url){window.open(url,'_blank');m.dataset.whatsappUrl='';}
+  m.classList.remove('ativo');
+};
 }
 function mostrarProgresso(etapa,titulo,descricao,pct){
  prepararPainelProgresso();const m=document.getElementById('painel-progresso');m.classList.add('ativo');
@@ -243,12 +246,11 @@ function mostrarProgresso(etapa,titulo,descricao,pct){
 }
 function concluirProgresso(titulo,descricao){
  const m=document.getElementById('painel-progresso');m.querySelectorAll('.pp-step').forEach(el=>{el.classList.remove('atual');el.classList.add('concluido');el.querySelector('.pp-dot').textContent='✓'});
- document.getElementById('pp-title').textContent=titulo;document.getElementById('pp-desc').textContent=descricao;document.getElementById('pp-fill').style.width='100%';document.getElementById('pp-foot').textContent='Concluído';document.getElementById('pp-orbit').classList.add('ok');document.getElementById('pp-icon').textContent='✓';document.getElementById('pp-warning').textContent='O WhatsApp foi aberto com a mensagem. Revise e toque em ENVIAR no próprio WhatsApp.';document.getElementById('pp-close').style.display='block';
+ document.getElementById('pp-title').textContent=titulo;document.getElementById('pp-desc').textContent=descricao;document.getElementById('pp-fill').style.width='100%';document.getElementById('pp-foot').textContent='Concluído';document.getElementById('pp-orbit').classList.add('ok');document.getElementById('pp-icon').textContent='✓';document.getElementById('pp-warning').textContent='';const fechar=document.getElementById('pp-close');fechar.textContent='📲 ABRIR WHATSAPP';fechar.style.display='block';fechar.disabled=false;
 }
 function falhaProgresso(msg){
  prepararPainelProgresso();const m=document.getElementById('painel-progresso');m.classList.add('ativo');document.getElementById('pp-title').textContent='Não foi possível concluir';document.getElementById('pp-desc').textContent=msg;document.getElementById('pp-foot').textContent='Processo interrompido';document.getElementById('pp-icon').textContent='!';document.getElementById('pp-warning').textContent='Se as evidências chegaram a ser enviadas, confira o histórico antes de repetir.';document.getElementById('pp-close').style.display='block';
 }
-
 async function gerarEEnviar(){
  const aluno=document.getElementById('nome-aluno-confirmado').innerText,
  turma=document.getElementById('turma').value,fone=document.getElementById('whatsapp-fone').value.trim(),
@@ -260,7 +262,7 @@ async function gerarEEnviar(){
  let numero=fone.replace(/\D/g,'');if(numero.startsWith('55'))numero=numero.slice(2);
  if(numero.length!==10&&numero.length!==11)return alert('Confira o WhatsApp: informe DDD + número (10 ou 11 dígitos).');
  const btn=document.getElementById('btn-finalizar');if(btn.disabled)return;
- const janelaWhatsApp=window.open('about:blank','_blank');
+ // Não abrir janela branca. WhatsApp só será aberto no botão final.
  btn.disabled=true;btn.innerText='PROCESSANDO REGISTRO…';
  const agora=new Date(),dataF=agora.toLocaleDateString('pt-BR'),horaF=agora.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
  const selecionados=[...document.querySelectorAll('#tipos-ocorrencia input:checked')].map(c=>c.getAttribute('data-label'));
@@ -274,21 +276,21 @@ async function gerarEEnviar(){
   const dadosPDF={aluno,turma,tipos_selecionados:textoParaBanco,observacoes:obs,penalidades:pen,professor:professorLogado,data_hora:`${dataF} às ${horaF}`,gravidade};
   const pdfBlob=await gerarPDFBlobOcorrencia(dadosPDF,fotosParaPDF);
   const pdfBase64=await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result.split(',')[1]);r.onerror=reject;r.readAsDataURL(pdfBlob)});
-  mostrarProgresso(0,'Salvando ocorrência','Arquivando o PDF e gravando o registro…',55);
+  mostrarProgresso(2,'Arquivando no Drive','Enviando o documento para o Drive…',58);
   const resp=await fetch(GOOGLE_SCRIPT_URL,{method:'POST',body:JSON.stringify({base64:pdfBase64,nomeArquivo:`Ocorrencia_${nomeArquivoSeguro(aluno)}_${registroKey}.pdf`})});
   if(!resp.ok)throw new Error('Não foi possível arquivar o PDF no Drive.');
   const resJ=await resp.json(),linkDrive=resJ.url||'';
   const registro={aluno,turma,tipos_selecionados:textoParaBanco,observacoes:obs,agressao:agr,penalidades:pen,professor:professorLogado,data_hora:`${dataF} às ${horaF}`,url_pdf:linkDrive,gravidade,fotos:fotosSalvas};
   const {error:insertError}=await _supabase.from('ocorrencias').insert([registro]);if(insertError)throw insertError;
-  mostrarProgresso(2,'Abrindo WhatsApp','Registro salvo. Preparando a conversa para revisão…',80);
   const mensagem=`📎 EEMTI DRAGÃO DO MAR - NOTIFICAÇÃO DISCIPLINAR\n\nOlá, informamos um registro de indisciplina para o aluno(a) ${aluno}.\n\n🔎 DETALHES:\n🎓 Aluno: ${aluno}\n⚖️ Classificação: ${emojiG}\n📆 Data: ${dataF} às ${horaF}\n⚠️ Itens: ${selecionados.join(', ')}\n\n📝 RELATO: ${obs||'Não detalhado'}\n\n⚖️ MEDIDA: ${pen||'Não informada'}\n\nDocumento original arquivado na nuvem.${linkDrive?'\n\n📄 ACESSE O PDF COMPLETO AQUI:\n'+linkDrive:''}`;
   const urlWhatsApp=`https://api.whatsapp.com/send?phone=55${numero}&text=${encodeURIComponent(mensagem)}`;
-  if(janelaWhatsApp&&!janelaWhatsApp.closed)janelaWhatsApp.location.href=urlWhatsApp;else window.open(urlWhatsApp,'_blank');
-  mostrarProgresso(3,'Finalização','Preparando sua cópia do PDF…',92);
-  const pdfURL=URL.createObjectURL(pdfBlob),a=document.createElement('a');a.href=pdfURL;a.download=`Ocorrencia_${nomeArquivoSeguro(aluno)}.pdf`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(pdfURL),4000);
+  mostrarProgresso(3,'Salvando cópia no dispositivo','O download do PDF será iniciado. Depois, use o botão para abrir o WhatsApp.',86);
+  const pdfURL=URL.createObjectURL(pdfBlob),a=document.createElement('a');a.href=pdfURL;a.download=`Ocorrencia_${nomeArquivoSeguro(aluno)}.pdf`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(pdfURL),60000);
   limparFormularioNovaOcorrencia();
-  concluirProgresso('Ocorrência salva!','Registro gravado e PDF gerado. Revise a mensagem no WhatsApp e envie quando estiver pronto.');
- }catch(e){console.error(e);if(janelaWhatsApp&&!janelaWhatsApp.closed)janelaWhatsApp.close();falhaProgresso(e?.message||'Verifique a conexão e as permissões do sistema.');}
+  const painel=document.getElementById('painel-progresso');painel.dataset.whatsappUrl=urlWhatsApp;
+  concluirProgresso('Ocorrência salva!','Registro gravado no sistema, documento arquivado no Drive e download do PDF solicitado. Quando estiver pronto, toque em ABRIR WHATSAPP.');
+  document.getElementById('pp-warning').textContent='Confira se o PDF foi baixado no dispositivo. Em seguida, toque em ABRIR WHATSAPP para continuar e enviar a notificação.';
+ }catch(e){console.error(e);falhaProgresso(e?.message||'Verifique a conexão e as permissões do sistema.');}
  finally{btn.innerText='💾 SALVAR E ✅ NOTIFICAR';btn.disabled=false;}
 }
 
@@ -339,7 +341,10 @@ async function baixarHistoricoZip(){
             ? 'Todo o período'
             : document.getElementById('mes-historico').selectedOptions[0].text;
 
+        // Pasta principal do ZIP
         const pastaTurma=zip.folder(`Turma ${turma}`);
+
+        // CSV geral na raiz da turma
         let csv='ID,Aluno,Turma,Data/Hora,Gravidade,Ocorrências,Medida,Professor,PDF\n';
         registros.forEach(oc=>{
             csv+=`"${oc.id}","${(oc.aluno||'').replace(/"/g,'""')}","${oc.turma||''}","${oc.data_hora||''}","${oc.gravidade||''}","${(oc.tipos_selecionados||'').replace(/"/g,'""')}","${(oc.penalidades||'').replace(/"/g,'""')}","${oc.professor||''}","${oc.url_pdf||''}"\n`;
@@ -376,6 +381,8 @@ async function baixarHistoricoZip(){
             btn.innerText=`BAIXANDO PDF ${i+1}/${registros.length}...`;
 
             try{
+                // O PDF é reconstruído localmente a partir dos dados salvos no Supabase.
+                // Isso evita o bloqueio CORS do Google Drive e coloca o PDF real dentro do ZIP.
                 const fotosPDF=await Promise.all((Array.isArray(oc.fotos)?oc.fotos:[]).map(f=>baixarFotoStorage(typeof f==='string'?f:f.path).catch(err=>{console.warn('Foto indisponível no PDF histórico',err);return null})).then(xs=>xs.filter(Boolean)));
                 const blob=await gerarPDFBlobOcorrencia(oc,fotosPDF);
                 pastaAluno.file(
@@ -385,6 +392,7 @@ async function baixarHistoricoZip(){
                 ok++;
             }catch(e){
                 console.error('Falha ao gerar PDF da ocorrência',oc.id,e);
+                // Só usa o link como último recurso se os dados não permitirem reconstruir o PDF.
                 if(oc.url_pdf){
                     pastaAluno.file(
                         `${String(i+1).padStart(3,'0')}_Ocorrencia_${oc.id}.url.txt`,
@@ -395,6 +403,7 @@ async function baixarHistoricoZip(){
             }
         }
 
+        // Resumo técnico na raiz.
         pastaTurma.file('RESUMO.txt',
 `EEMTI DRAGÃO DO MAR\n`+
 `HISTÓRICO DE OCORRÊNCIAS\n\n`+
