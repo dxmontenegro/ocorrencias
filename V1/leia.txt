@@ -1,0 +1,1 @@
+Versão inicial do sistema , em caso de falha restaure esses arquivos
